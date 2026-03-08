@@ -50,6 +50,9 @@ from cerebellum.observability import Tracer
 from cerebellum.observability import Metrics
 
 
+TASK = "Analyze the AI market in Latin America"
+
+
 async def main():
 
     # -----------------------------
@@ -118,7 +121,7 @@ async def main():
     attention = SimpleAttention()
     action = ConsoleAction()
     learning = SimpleLearning()
-    environment = TextEnvironment("What is the capital of Peru?")
+    environment = TextEnvironment(TASK)
     
     system = CognitiveSystem(
         perception=perception,
@@ -141,9 +144,7 @@ async def main():
 
     agent = CognitiveAgent(system)
 
-    result = await agent.run(
-        "Analyze the AI market in Latin America"
-    )
+    result = await agent.run(TASK)
 
     print("\nFINAL RESULT\n")
     print(result)
