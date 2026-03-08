@@ -1,5 +1,5 @@
 """
-Core abstract interfaces for the cognitive architecture.
+Learning implementations: experience-driven adaptation and memory updates.
 """
 
 from .simple_learning import SimpleLearning
