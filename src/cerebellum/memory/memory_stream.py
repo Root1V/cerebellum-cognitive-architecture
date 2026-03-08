@@ -10,7 +10,7 @@ class MemoryStream(Memory):
     """
 
     def __init__(self):
-        self.memories = []
+        self.memories: list[dict] = []
 
     # --- Memory ABC ---
 

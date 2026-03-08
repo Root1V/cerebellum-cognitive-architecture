@@ -1,3 +1,5 @@
+from typing import Any
+
 from ..core.tool import Tool
 
 
@@ -5,8 +7,8 @@ class DatabaseTool(Tool):
 
     name = "database"
 
-    def __init__(self, db=None):
-        self.db = db
+    def __init__(self, db: Any = None):
+        self.db: Any = db
 
     async def execute(self, query="", **kwargs):
         if self.db:

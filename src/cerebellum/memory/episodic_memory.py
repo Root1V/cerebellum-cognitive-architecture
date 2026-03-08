@@ -9,7 +9,7 @@ class EpisodicMemory(Memory):
     """
 
     def __init__(self):
-        self.events = []
+        self.events: list[dict] = []
 
     # --- Memory ABC ---
 

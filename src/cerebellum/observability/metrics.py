@@ -1,7 +1,7 @@
 class Metrics:
 
     def __init__(self):
-        self.counters = {}
+        self.counters: dict[str, int] = {}
 
     def increment(self, name):
         self.counters[name] = self.counters.get(name, 0) + 1

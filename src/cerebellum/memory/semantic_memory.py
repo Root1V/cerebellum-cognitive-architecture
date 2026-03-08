@@ -1,6 +1,8 @@
 # maybe vector database
 # maybe knowledge graph
 
+from typing import Any
+
 from ..core.memory import Memory
 
 
@@ -10,7 +12,7 @@ class SemanticMemory(Memory):
     """
 
     def __init__(self):
-        self.knowledge = {}
+        self.knowledge: dict[str, Any] = {}
 
     async def store(self, key, value) -> None:
         self.knowledge[key] = value
