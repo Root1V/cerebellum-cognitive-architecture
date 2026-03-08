@@ -8,7 +8,7 @@ class SimplePlanner(Planner):
     Las action names están alineadas con lo que el reasoner puede ejecutar.
     """
 
-    async def create_plan(self, goal, context=None) -> list[dict]:
+    async def create_plan(self, goal: dict, context: list | None = None) -> list[dict]:
         return [
             {"step": 1, "action": "search_market_data", "goal": goal},
             {"step": 2, "action": "analyze_trends",     "goal": goal},

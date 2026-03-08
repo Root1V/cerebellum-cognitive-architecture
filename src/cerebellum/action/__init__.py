@@ -1,5 +1,5 @@
 """
-Core abstract interfaces for the cognitive architecture.
+Action implementations: console, API, and other environment actuators.
 """
 
 from .console_action import ConsoleAction

@@ -1,5 +1,5 @@
 """
-Core abstract interfaces for the cognitive architecture.
+Attention implementations: filter and focus relevant perception inputs.
 """
 
 from .simple_attention import SimpleAttention

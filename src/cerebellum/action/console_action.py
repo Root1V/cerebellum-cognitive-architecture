@@ -18,9 +18,8 @@ from ..core.tool import Tool
 
 class ConsoleAction(Action):
 
-    def __init__(self, tools: list[Tool] = None, environment=None):
-        self.tools = tools or []
-        self.environment = environment
+    def __init__(self, tools: dict[str, Tool] | None = None):
+        self.tools: dict[str, Tool] = tools or {}
 
     async def execute(self, action):
 
@@ -31,8 +30,9 @@ class ConsoleAction(Action):
 
         if isinstance(action, dict):
             if action.get("type") == "tool":
-                tool = self.tools[action["tool"]]
-                return await tool.execute(**action.get("input", {}))
+                tool = self.tools.get(action["tool"])
+                if tool:
+                    return await tool.execute(**action.get("input", {}))
 
             if action.get("type") == "respond":
                 print(f"[RESPOND] {action['content']}")

@@ -1,9 +1,9 @@
 # reasoning/llm_reasoner.py
 
 from ..core.reasoning import Reasoner
-from ..core.planner import Planner
 from ..core.memory import Memory
 from ..core.tool import Tool
+
 
 class LLMReasoner(Reasoner):
 
@@ -11,33 +11,35 @@ class LLMReasoner(Reasoner):
         self.llm = llm_client
 
     async def reason(self, context):
-        return await self.solve(context, {}, [])
+        return await self.solve(context, {}, {})
 
-    async def execute(self, plan, memory: Memory, tools: list[Tool]):
+    async def execute(self, plan: list[dict], memory: Memory, tools: dict[str, Tool]):
         results = []
         for step in plan:
             result = await self.solve(step, memory, tools)
             results.append(result)
         return results
 
-    async def solve(self, step, memory: Memory, tools: list[Tool]):
+    async def solve(self, step: dict, memory: Memory, tools: dict[str, Tool]):
+        # Support both plan formats:
+        #   new: {"action": "search_market_data", ...}
+        #   legacy: {"step": "search_market_data", ...}
+        action = step.get("action") or step.get("step")
 
-        if step["step"] == "search_market_data":
+        if action == "search_market_data":
+            tool = tools.get("web_search")
+            if tool:
+                return await tool.execute(query="AI market Latin America")
+            return "Search results for AI market Latin America"
 
-            tool: Tool = tools["web_search"]
+        if action == "analyze_trends":
+            if self.llm:
+                return await self.llm.complete(
+                    f"AI adoption growing in fintech and healthcare: {step}"
+                )
+            return "AI adoption growing in fintech and healthcare"
 
-            return await tool.execute(
-                query="AI market Latin America"
-            )
-
-        if step["step"] == "analyze_trends":
-
-            return await self.llm.complete(
-                f"AI adoption growing in fintech and healthcare: {step}"
-            )
-
-        if step["step"] == "generate_summary":
-
+        if action == "generate_summary":
             return "AI market in LATAM shows strong growth potential"
 
-        return "unknown step"
+        return f"unknown action: {action}"

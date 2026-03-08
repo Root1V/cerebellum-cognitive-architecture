@@ -1,6 +1,4 @@
 from ..core.attention import Attention
-from ..core.perception import Perception
-from ..core.memory import Memory
 
 
 class SimpleAttention(Attention):
@@ -9,7 +7,7 @@ class SimpleAttention(Attention):
     En una implementación real usaría relevance scoring o embeddings.
     """
 
-    async def select(self, perception: Perception, memory: Memory) -> dict:
+    async def select(self, perception: dict, memory: dict) -> dict:
         """
         Retorna la percepción sin modificar.
         memory se recibe para mantener el contrato del ABC pero no se usa aquí.

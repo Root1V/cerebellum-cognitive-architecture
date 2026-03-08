@@ -4,28 +4,27 @@ from ..core.planner import Planner
 from ..core.memory import Memory
 from ..core.tool import Tool
 
+
 class HierarchicalReasoner(Reasoner):
 
     def __init__(self, planner: Planner, worker):
         self.planner = planner
         self.worker = worker
-    
-    async def reason(self, context):
-        return await self.execute(context, {}, [])
 
-    async def execute(self, goal, memory: Memory, tools: list[Tool]):
+    async def reason(self, context):
+        return await self.execute(context, {}, {})
+
+    async def execute(self, goal, memory: Memory, tools: dict[str, Tool]):
 
         plan = await self.planner.create_plan(goal)
         results = []
 
         for step in plan:
-
             result = await self.worker.solve(
                 step,
                 memory,
                 tools
             )
-
             results.append(result)
 
         return results
