@@ -12,6 +12,9 @@ from ..core.reasoning import Reasoner
 from ..core.tool import Tool
 from ..observability.tracer import Tracer
 from ..observability.metrics import Metrics
+from typing import Any
+
+_MAX_GOAL_DEPTH = 5
 
 
 class CognitiveSystem:
@@ -45,7 +48,7 @@ class CognitiveSystem:
         self.metrics: Metrics | None = metrics
         self.tracer: Tracer | None = tracer
 
-    async def run(self, input_data):
+    async def run(self, input_data: str, _depth: int = 0) -> Any:
 
         if self.tracer:
             self.tracer.trace("input_received", input_data)
@@ -100,9 +103,14 @@ class CognitiveSystem:
         if self.controller:
             satisfied = await self.controller.is_goal_satisfied(goal, result)
             if not satisfied:
+                if _depth >= _MAX_GOAL_DEPTH:
+                    # Prevent infinite recursion when goal is never satisfied
+                    if error:
+                        raise error
+                    return result
                 next_goal = await self.controller.next_goal(goal, result)
                 if next_goal:
-                    return await self.run(next_goal["goal"])
+                    return await self.run(next_goal["goal"], _depth + 1)
 
         if error:
             raise error
