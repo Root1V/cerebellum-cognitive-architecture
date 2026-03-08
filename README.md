@@ -7,6 +7,8 @@ The core idea: a **cognitive system** built from multiple specialized subsystems
 ---
 
 ## Architecture - Level 0: Cognitive
+
+```
                   USER
                    │
                    ▼
@@ -25,6 +27,7 @@ The core idea: a **cognitive system** built from multiple specialized subsystems
              Environment
                   │
              Observability
+```
 
 
 ## C4 Architecture — Level 1: System Context
