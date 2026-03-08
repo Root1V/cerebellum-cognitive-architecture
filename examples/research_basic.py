@@ -15,6 +15,7 @@ from cerebellum.planners import SimplePlanner
 from cerebellum.reasoning import LoopReasoner
 from cerebellum.runtime import CognitiveSystem
 from cerebellum.environment import TextEnvironment
+from cerebellum.controller import SimpleController
 
 
 async def main():
@@ -33,6 +34,7 @@ async def main():
         action=ConsoleAction(),
         learning=SimpleLearning(),
         environment=TextEnvironment("basic research task"),
+        controller=SimpleController(),
     )
 
     agent = CognitiveAgent(system)

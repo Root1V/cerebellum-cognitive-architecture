@@ -29,7 +29,7 @@ class CognitiveSystem:
         action: Action,
         learning: Learning,
         environment: Environment,
-        controller: CognitiveController | None = None,
+        controller: CognitiveController,
         tools: dict[str, Tool] | None = None,
         tracer: Tracer | None = None,
         metrics: Metrics | None = None
@@ -43,7 +43,7 @@ class CognitiveSystem:
         self.action: Action = action
         self.learning: Learning = learning
         self.environment: Environment = environment
-        self.controller: CognitiveController | None = controller
+        self.controller: CognitiveController = controller
         self.tools: dict[str, Tool] = tools or {}
         self.metrics: Metrics | None = metrics
         self.tracer: Tracer | None = tracer
@@ -65,10 +65,7 @@ class CognitiveSystem:
         focused = await self.attention.select(perception, self.memory)
 
         # 3. Controller interprets focused input into a goal
-        if self.controller:
-            goal = await self.controller.interpret(focused)
-        else:
-            goal = {"goal": focused.get("content", input_data)}
+        goal = await self.controller.interpret(focused)
 
         # 4. Memory retrieval — past experiences to enrich planning
         context = await self.memory["episodic"].recall(goal["goal"])
@@ -125,17 +122,16 @@ class CognitiveSystem:
         })
 
         # 9. Controller evaluates whether the goal was satisfied
-        if self.controller:
-            satisfied = await self.controller.is_goal_satisfied(goal, result)
-            if not satisfied:
-                if _depth >= _MAX_GOAL_DEPTH:
-                    # Prevent infinite recursion when goal is never satisfied
-                    if error:
-                        raise error
-                    return result
-                next_goal = await self.controller.next_goal(goal, result)
-                if next_goal:
-                    return await self.run(next_goal["goal"], _depth + 1)
+        satisfied = await self.controller.is_goal_satisfied(goal, result)
+        if not satisfied:
+            if _depth >= _MAX_GOAL_DEPTH:
+                # Prevent infinite recursion when goal is never satisfied
+                if error:
+                    raise error
+                return result
+            next_goal = await self.controller.next_goal(goal, result)
+            if next_goal:
+                return await self.run(next_goal["goal"], _depth + 1)
 
         if error:
             raise error
