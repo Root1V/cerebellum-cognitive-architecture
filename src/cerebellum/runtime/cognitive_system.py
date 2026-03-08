@@ -83,15 +83,35 @@ class CognitiveSystem:
             error = exc
             result = None
 
-        # 7. Learning — record the experience
+        # 6.5. Action — translate reasoning output into an environmental effect
+        # This is where the agent actually does something in the world.
+        action_result = None
+        if result is not None and error is None:
+            try:
+                action_result = await self.action.execute(result)
+                self.environment.update(action_result)
+                if self.tracer:
+                    self.tracer.trace("action_executed", action_result)
+            except Exception as exc:
+                error = exc
+
+        # 7. Learning — record the experience with the action outcome
         experience = Experience(
-            result=result,
+            result=action_result if action_result is not None else result,
             error=error,
             feedback=None,
             success=error is None and result is not None,
             context={"goal": goal, "plan": plan},
         )
         await self.learning.update(experience)
+
+        # 7.5. Metrics — track outcome of this cognitive cycle
+        if self.metrics:
+            self.metrics.increment("runs")
+            if experience.success:
+                self.metrics.increment("successes")
+            else:
+                self.metrics.increment("errors")
 
         # 8. Store episodic memory
         await self.memory["episodic"].store_event({
@@ -115,4 +135,4 @@ class CognitiveSystem:
         if error:
             raise error
 
-        return result
+        return action_result if action_result is not None else result

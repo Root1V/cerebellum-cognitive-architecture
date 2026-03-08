@@ -20,8 +20,12 @@ class HierarchicalReasoner(Reasoner):
         memory: dict[str, Memory],
         tools: dict[str, Tool],
     ) -> list:
+        # Retrieve past episodes from memory to give the planner context
+        context = None
+        if "episodic" in memory:
+            context = await memory["episodic"].recall(str(goal))
 
-        plan = await self.planner.create_plan(goal)
+        plan = await self.planner.create_plan(goal, context)
         results = []
 
         for step in plan:
