@@ -16,18 +16,25 @@ from ..core.tool import Tool
 
 class ConsoleAction:
 
-    def __init__(self, tools: list[Tool], environment):
-        self.tools = tools
+    def __init__(self, tools: list[Tool] = None, environment=None):
+        self.tools = tools or []
         self.environment = environment
-        
-    def execute(self, action):
 
-        if action["type"] == "tool":
+    async def execute(self, action):
 
-            tool = self.tools[action["tool"]]
+        if isinstance(action, list):
+            for item in action:
+                print(f"[ACTION] {item}")
+            return action
 
-            return tool.run(action["input"])
+        if isinstance(action, dict):
+            if action.get("type") == "tool":
+                tool = self.tools[action["tool"]]
+                return await tool.execute(**action.get("input", {}))
 
-        if action["type"] == "respond":
+            if action.get("type") == "respond":
+                print(f"[RESPOND] {action['content']}")
+                return action["content"]
 
-            return action["content"]
+        print(f"[ACTION] {action}")
+        return action

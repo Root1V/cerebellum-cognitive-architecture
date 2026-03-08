@@ -1,7 +1,14 @@
-class DatabaseTool:
+from ..core.tool import Tool
 
-    def __init__(self, db):
+
+class DatabaseTool(Tool):
+
+    name = "database"
+
+    def __init__(self, db=None):
         self.db = db
 
-    def query(self, q):
-        return self.db.execute(q)
+    async def execute(self, query="", **kwargs):
+        if self.db:
+            return self.db.execute(query)
+        return f"[DatabaseTool] mock result for: {query}"

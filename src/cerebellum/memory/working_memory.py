@@ -13,3 +13,7 @@ class WorkingMemory(Memory):
 
     async def retrieve(self, key):
         return self.state.get(key)
+
+    async def update(self, item):
+        if isinstance(item, dict):
+            self.state.update(item)

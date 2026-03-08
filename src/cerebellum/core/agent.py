@@ -8,9 +8,6 @@ class CognitiveAgent:
     
     async def run(self, task):
 
-        self.system.set_goal(task)
+        result = await self.system.run(task)
 
-        while not self.system.is_finished():
-            self.system.step()
-
-        return self.system.get_result()
+        return result

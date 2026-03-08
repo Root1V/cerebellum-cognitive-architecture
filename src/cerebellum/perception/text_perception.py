@@ -4,7 +4,7 @@ from ..core.perception import Perception
 
 class TextPerception(Perception):
 
-    async def process(self, text):
+    async def perceive(self, text):
 
         return {
             "type": "text",

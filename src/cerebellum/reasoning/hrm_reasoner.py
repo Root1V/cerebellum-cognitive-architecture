@@ -10,6 +10,9 @@ class HierarchicalReasoner(Reasoner):
         self.planner = planner
         self.worker = worker
     
+    async def reason(self, context):
+        return await self.execute(context, {}, [])
+
     async def execute(self, goal, memory: Memory, tools: list[Tool]):
 
         plan = await self.planner.create_plan(goal)

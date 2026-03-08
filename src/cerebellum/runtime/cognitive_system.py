@@ -14,6 +14,8 @@ class CognitiveSystem:
         action,
         learning,
         environment,
+        controller=None,
+        tools=None,
         tracer=None,
         metrics=None
     ):
@@ -26,6 +28,8 @@ class CognitiveSystem:
         self.action = action
         self.learning = learning
         self.environment = environment
+        self.controller = controller
+        self.tools = tools or []
         self.metrics = metrics
         self.tracer = tracer
 
@@ -39,7 +43,7 @@ class CognitiveSystem:
         # 1 perception
         raw_input = self.environment.observe()
 
-        perception_output = self.perception.process(raw_input)
+        perception_output = self.perception.perceive(raw_input)
 
         # 2 attention
         focused = self.attention.filter(perception_output)
@@ -73,10 +77,13 @@ class CognitiveSystem:
             self.tracer.trace("input_received", input_data)
 
         # Perception
-        perception = await self.perception.process(input_data)
+        perception = await self.perception.perceive(input_data)
 
-        # Controller interprets goal
-        goal = await self.controller.interpret(perception)
+        # Controller interprets goal (optional)
+        if self.controller:
+            goal = await self.controller.interpret(perception)
+        else:
+            goal = {"goal": perception.get("content", input_data)}
 
         # Retrieve memory
         context = await self.memory["episodic"].recall(goal["goal"])
@@ -88,7 +95,7 @@ class CognitiveSystem:
         result = await self.reasoner.execute(
             plan,
             self.memory,
-            self.tools
+            self.tools or []
         )
 
         # Store memory

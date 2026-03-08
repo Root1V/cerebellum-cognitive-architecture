@@ -7,9 +7,19 @@ from ..core.tool import Tool
 
 class LLMReasoner(Reasoner):
 
-    def __init__(self, llm_client):
+    def __init__(self, llm_client=None):
         self.llm = llm_client
-    
+
+    async def reason(self, context):
+        return await self.solve(context, {}, [])
+
+    async def execute(self, plan, memory: Memory, tools: list[Tool]):
+        results = []
+        for step in plan:
+            result = await self.solve(step, memory, tools)
+            results.append(result)
+        return results
+
     async def solve(self, step, memory: Memory, tools: list[Tool]):
 
         if step["step"] == "search_market_data":

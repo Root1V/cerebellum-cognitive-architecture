@@ -9,7 +9,7 @@ class SimplePlanner(Planner):
     def __init__(self, llm_client=None):
         self.llm = llm_client
 
-    async def create_plan(self, goal):
+    async def create_plan(self, goal, context=None):
         if self.llm is not None:
             response = await self.llm.complete(
                 f"Break this goal into ordered steps: {goal}"
