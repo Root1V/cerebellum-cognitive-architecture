@@ -103,7 +103,7 @@ async def main():
     # Planner
     # -----------------------------
 
-    planner = SimplePlanner()
+    planner = SimplePlanner(tools=tools)
 
     # -----------------------------
     # Reasoning Engine

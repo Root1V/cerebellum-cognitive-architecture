@@ -102,12 +102,16 @@ class LoopReasoner(Reasoner):
 
     async def _think(self, state: dict, memory: Memory, tools) -> dict | str:
         """
-        Decide el siguiente paso basándose en el plan del planner y el historial.
+        Decide el siguiente paso consumiendo el plan del Planner en orden.
 
-        Si state["goal"] es una lista (plan estructurado del Planner), consume sus
-        pasos en orden. Si es un dict/str (goal directo), usa actions por defecto.
-        En una implementación con LLM real, aquí se construiría un prompt con el
-        goal + historial y se le pediría al modelo la siguiente acción.
+        El Planner es responsable de determinar QUÉ pasos ejecutar.
+        El Reasoner es responsable de ITERAR sobre ellos observando el
+        historial acumulado — eso es lo que diferencia ReAct de ejecución
+        secuencial simple.
+
+        En una implementación con LLM real, aquí se construiría un prompt
+        con goal + historial para que el modelo decida el siguiente paso,
+        en lugar de consumir el plan linealmente.
         """
         completed_actions = [
             h["action"].get("step") if isinstance(h["action"], dict) else h["action"]
@@ -117,21 +121,12 @@ class LoopReasoner(Reasoner):
         plan = state["goal"]
 
         if isinstance(plan, list):
-            # Consume los pasos del plan en orden
             for plan_step in plan:
                 action_name = plan_step.get("action") or plan_step.get("step")
                 if action_name not in completed_actions:
                     return {"step": action_name, "meta": plan_step}
-            return "done"
 
-        # Fallback: sin plan estructurado — derivar pasos de las tools registradas.
-        # Esto hace al reasoner agnóstico al dominio: no importa qué tools estén
-        # disponibles, las itera en orden hasta agotarlas.
-        if isinstance(tools, dict) and tools:
-            remaining = [name for name in tools if name not in completed_actions]
-            return {"step": remaining[0]} if remaining else "done"
-
-        # Sin plan ni tools — nada que ejecutar
+        # Plan agotado o no estructurado — el loop termina
         return "done"
 
     async def _invoke(self, action: dict | str, memory: Memory, tools) -> str | None:
@@ -175,9 +170,8 @@ class LoopReasoner(Reasoner):
         el ciclo cognitivo completo? Ambos existen en niveles distintos.
 
         El loop se considera satisfecho cuando:
-        - last_result es None (la invocación indicó 'done'), o
-        - todos los pasos del plan fueron completados, o
-        - (sin plan) todas las tools registradas fueron invocadas.
+        - last_result es None (_think() señaló "done" → _invoke() devolvió None), o
+        - todos los pasos del plan fueron completados (segundo chequeo de seguridad).
         """
         if last_result is None:
             return True
@@ -191,9 +185,5 @@ class LoopReasoner(Reasoner):
         if isinstance(plan, list):
             plan_steps = {step.get("action") or step.get("step") for step in plan}
             return plan_steps.issubset(completed)
-
-        # Fallback sin plan: completo cuando todas las tools disponibles fueron llamadas
-        if isinstance(tools, dict) and tools:
-            return set(tools.keys()).issubset(completed)
 
         return True
