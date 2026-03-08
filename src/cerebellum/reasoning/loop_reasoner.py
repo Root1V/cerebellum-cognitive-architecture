@@ -75,7 +75,7 @@ class LoopReasoner(Reasoner):
             })
 
             # 3. Evaluate — ¿ya terminamos?
-            if await self._is_complete(state, result):
+            if await self._is_complete(state, result, tools):
                 break
 
         return state["history"]
@@ -108,54 +108,53 @@ class LoopReasoner(Reasoner):
                     return {"step": action_name, "meta": plan_step}
             return "done"
 
-        # Fallback: sin plan estructurado, usar acciones por defecto
-        available_actions = [
-            "search_market_data",
-            "analyze_trends",
-            "generate_summary",
-        ]
-        remaining = [a for a in available_actions if a not in completed_actions]
-        return {"step": remaining[0]} if remaining else "done"
+        # Fallback: sin plan estructurado — derivar pasos de las tools registradas.
+        # Esto hace al reasoner agnóstico al dominio: no importa qué tools estén
+        # disponibles, las itera en orden hasta agotarlas.
+        if isinstance(tools, dict) and tools:
+            remaining = [name for name in tools if name not in completed_actions]
+            return {"step": remaining[0]} if remaining else "done"
+
+        # Sin plan ni tools — nada que ejecutar
+        return "done"
 
     async def _act(self, action: dict | str, memory: Memory, tools) -> str | None:
         """
         Ejecuta la acción elegida por _think.
 
-        tools puede ser un dict {nombre: Tool} o una lista.
+        Orden de delegación:
+          1. Tool registrada cuyo nombre coincide con el paso.
+          2. LLM, si está configurado.
+          3. Placeholder genérico (útil en tests / sin infraestructura).
         """
         if action == "done" or not isinstance(action, dict):
             return None
 
         step = action.get("step")
+        meta = action.get("meta", {})
 
-        if step == "search_market_data":
-            tool = tools.get("web_search") if isinstance(tools, dict) else None
-            if tool:
-                return await tool.execute(query="AI market Latin America")
-            return "Search results for AI market Latin America"
+        # 1. Delegar a tool registrada
+        tool = tools.get(step) if isinstance(tools, dict) else None
+        if tool:
+            return await tool.execute()
 
-        if step == "analyze_trends":
-            if self.llm:
-                return await self.llm.complete(
-                    f"Analyze AI adoption trends. Context: {action}"
-                )
-            return "AI adoption growing in fintech and healthcare"
+        # 2. Delegar al LLM
+        if self.llm:
+            return await self.llm.complete(
+                f"Execute step '{step}'. Context: {meta}"
+            )
 
-        if step == "generate_summary":
-            return "AI market in LATAM shows strong growth potential"
+        # 3. Placeholder — sin tool ni LLM (suficiente para tests unitarios)
+        return f"executed: {step}"
 
-        return f"unknown action: {step}"
-
-    async def _is_complete(self, state: dict, last_result) -> bool:
+    async def _is_complete(self, state: dict, last_result, tools) -> bool:
         """
         Condición de parada del loop.
 
         El objetivo se considera alcanzado cuando:
         - last_result es None (la acción fue 'done'), o
-        - todos los pasos del plan fueron completados.
-
-        La lógica es general: no depende de nombres de acción específicos,
-        sino de que el historial cubra todos los pasos del plan actual.
+        - todos los pasos del plan fueron completados, o
+        - (sin plan) todas las tools registradas fueron ejecutadas.
         """
         if last_result is None:
             return True
@@ -170,5 +169,8 @@ class LoopReasoner(Reasoner):
             plan_steps = {step.get("action") or step.get("step") for step in plan}
             return plan_steps.issubset(completed)
 
-        # Fallback sin plan estructurado: completo cuando todos los defaults terminaron
-        return {"search_market_data", "analyze_trends", "generate_summary"}.issubset(completed)
+        # Fallback sin plan: completo cuando todas las tools disponibles fueron llamadas
+        if isinstance(tools, dict) and tools:
+            return set(tools.keys()).issubset(completed)
+
+        return True
