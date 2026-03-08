@@ -40,8 +40,7 @@ from cerebellum.memory import MemoryStream
 
 from cerebellum.planners import SimplePlanner
 
-from cerebellum.reasoning import HierarchicalReasoner
-from cerebellum.reasoning import LLMReasoner
+from cerebellum.reasoning import LoopReasoner
 
 from cerebellum.runtime import TextEnvironment
 from cerebellum.tools import WebSearchTool
@@ -104,12 +103,7 @@ async def main():
     # Reasoning Engine
     # -----------------------------
 
-    worker_reasoner = LLMReasoner()
-
-    reasoner = HierarchicalReasoner(
-        planner=planner,
-        worker=worker_reasoner
-    )
+    reasoner = LoopReasoner(max_iterations=10)
 
     # -----------------------------
     # Controller
