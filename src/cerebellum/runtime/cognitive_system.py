@@ -32,18 +32,18 @@ class CognitiveSystem:
         metrics: Metrics | None = None
     ):
 
-        self.perception = perception
-        self.attention = attention
-        self.memory = memory
-        self.planner = planner
-        self.reasoner = reasoner
-        self.action = action
-        self.learning = learning
-        self.environment = environment
-        self.controller = controller
-        self.tools = tools or {}
-        self.metrics = metrics
-        self.tracer = tracer
+        self.perception: Perception = perception
+        self.attention: Attention = attention
+        self.memory: dict[str, Memory] = memory
+        self.planner: Planner = planner
+        self.reasoner: Reasoner = reasoner
+        self.action: Action = action
+        self.learning: Learning = learning
+        self.environment: Environment = environment
+        self.controller: CognitiveController | None = controller
+        self.tools: dict[str, Tool] = tools or {}
+        self.metrics: Metrics | None = metrics
+        self.tracer: Tracer | None = tracer
 
     async def run(self, input_data):
 
@@ -62,11 +62,11 @@ class CognitiveSystem:
         else:
             goal = {"goal": focused.get("content", input_data)}
 
-        # 4. Memory retrieval
+        # 4. Memory retrieval — past experiences to enrich planning
         context = await self.memory["episodic"].recall(goal["goal"])
 
         # 5. Planning
-        plan = await self.planner.create_plan(goal)
+        plan = await self.planner.create_plan(goal, context)
 
         # 6. Reasoning
         error = None
