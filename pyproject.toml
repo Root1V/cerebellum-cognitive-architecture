@@ -1,7 +1,10 @@
 [project]
 name = "cerebellum"
 version = "0.1.0"
-description = "Add your description here"
+description = "Cognitive architecture for AI agents"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]

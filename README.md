@@ -1,6 +1,6 @@
 # Cerebellum
 
-Cerebellum is a proposal for a modern cognitive architecture for AI agents — essentially the blueprint that many research labs are exploring to build systems closer to general intelligence.
+Cerebellum is a "Cognitive Framework" proposal for a modern cognitive architecture for AI agents — essentially the blueprint that many research labs are exploring to build systems closer to general intelligence.
 
 The core idea: a **cognitive system** built from multiple specialized cognitive subsystems working together.
 
@@ -124,7 +124,7 @@ Cognitive Agents (Autonomous)
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/cerebellum.git
+git clone https://github.com/Root1V/cerebellum-architecture.git
 cd cerebellum
 
 # Install dependencies
@@ -136,6 +136,131 @@ python main.py
 
 ---
 
+## Project Structure
+
+```
+cerebellum/
+├── examples/
+│   └── research_agent.py        # Example: research agent using the full system
+├── src/
+│   └── cerebellum/
+│       ├── __init__.py
+│       ├── core/                # Abstract interfaces (ABCs)
+│       │   ├── agent.py         # CognitiveAgent — entry point for running tasks
+│       │   ├── attention.py     # Attention — filter relevant information
+│       │   ├── controller.py    # CognitiveController — orchestrates the cognitive loop
+│       │   ├── learning.py      # Learning — updates from experience
+│       │   ├── memory.py        # Memory — abstract store/retrieve interface
+│       │   ├── perception.py    # Perception — processes raw input
+│       │   ├── planner.py       # Planner — decomposes goals into steps
+│       │   ├── reasoning.py     # Reasoner — executes a plan
+│       │   ├── action.py        # Action — executes actions in the environment
+│       │   ├── tool.py          # Tool — abstract interface for external tools
+│       │   └── environment.py   # Environment — world the agent interacts with
+│       ├── controller/          # Controller implementations
+│       │   ├── simple_controller.py
+│       │   ├── attention_manager.py
+│       │   └── goal_manager.py
+│       ├── memory/              # Memory implementations
+│       │   ├── working_memory.py
+│       │   ├── episodic_memory.py
+│       │   ├── semantic_memory.py
+│       │   ├── procedural_memory.py
+│       │   ├── memory_stream.py
+│       │   ├── vector_memory.py
+│       │   └── graph_memory.py
+│       ├── perception/          # Perception implementations
+│       │   ├── text_perception.py
+│       │   └── multimodal_perception.py
+│       ├── planners/            # Planner implementations
+│       │   ├── llm_planner.py
+│       │   ├── simple_planner.py
+│       │   └── task_graph_planner.py
+│       ├── reasoning/           # Reasoning implementations
+│       │   ├── llm_reasoner.py
+│       │   ├── recursive_reasoner.py
+│       │   ├── tree_reasoner.py
+│       │   └── hrm_reasoner.py
+│       ├── runtime/             # Cognitive system loop
+│       │   ├── cognitive_system.py
+│       │   ├── event_bus.py
+│       │   └── event_loop.py
+│       ├── tools/               # Tool implementations
+│       │   ├── web_search.py
+│       │   ├── code_executor.py
+│       │   └── database_tool.py
+│       └── observability/       # Tracing and metrics
+│           ├── tracer.py
+│           └── metrics.py
+├── main.py
+└── pyproject.toml
+```
+
+---
+
 ## Status
 
 > This project is in early research and development. The architecture described here serves as the conceptual foundation for the implementation.
+
+
+---
+Principies:
+1. Event-Driven Cognition
+2. Memory Streams (tipo cerebro humano)
+3. Cognitive Loop completo
+
+Environment
+     │
+     ▼
+Event Bus
+     │
+     ▼
+Perception
+     │
+     ▼
+Memory Streams
+     │
+     ▼
+Cognitive Controller
+     │
+     ▼
+Reasoning Loop
+     │
+     ▼
+Tools / Actions
+     │
+     ▼
+New Events
+
+
+Las 7 interfaces cognitivas fundamentales
+1. Perception
+2. Attention
+3. Memory
+4. Reasoning
+5. Planning
+6. Action
+7. Learning
+
+Environment
+     │
+     ▼
+Perception
+     │
+     ▼
+Attention
+     │
+     ▼
+Memory
+     │
+     ▼
+Reasoning
+     │
+     ▼
+Planning
+     │
+     ▼
+Action
+     │
+     ▼
+Learning
