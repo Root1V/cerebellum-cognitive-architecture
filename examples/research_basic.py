@@ -13,7 +13,8 @@ from cerebellum.memory import EpisodicMemory, WorkingMemory
 from cerebellum.perception import TextPerception
 from cerebellum.planners import SimplePlanner
 from cerebellum.reasoning import LoopReasoner
-from cerebellum.runtime import CognitiveSystem, TextEnvironment
+from cerebellum.runtime import CognitiveSystem
+from cerebellum.environment import TextEnvironment
 
 
 async def main():

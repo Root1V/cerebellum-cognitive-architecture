@@ -42,7 +42,7 @@ from cerebellum.planners import SimplePlanner
 
 from cerebellum.reasoning import LoopReasoner
 
-from cerebellum.runtime import TextEnvironment
+from cerebellum.environment import TextEnvironment
 from cerebellum.tools import WebSearchTool
 from cerebellum.tools import DatabaseTool
 
