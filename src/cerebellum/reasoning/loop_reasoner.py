@@ -41,7 +41,7 @@ class LoopReasoner(Reasoner):
         """Punto de entrada simple: usa execute con memoria y tools vacíos."""
         return await self.execute(context, {}, [])
 
-    async def execute(self, goal, memory: Memory, tools: list[Tool]):
+    async def execute(self, goal, memory: Memory, tools: dict[str, Tool]):
         """
         Ejecuta el ciclo de razonamiento.
 
@@ -85,30 +85,36 @@ class LoopReasoner(Reasoner):
 
     async def _think(self, state: dict, memory: Memory, tools) -> dict | str:
         """
-        Decide el siguiente paso basándose en el historial actual.
+        Decide el siguiente paso basándose en el plan del planner y el historial.
 
-        En una implementación con LLM real, aquí se construiría un prompt
-        con el goal + historial y se le pediría al modelo que devuelva
-        la siguiente acción en formato estructurado.
+        Si state["goal"] es una lista (plan estructurado del Planner), consume sus
+        pasos en orden. Si es un dict/str (goal directo), usa actions por defecto.
+        En una implementación con LLM real, aquí se construiría un prompt con el
+        goal + historial y se le pediría al modelo la siguiente acción.
         """
-        completed_steps = [
+        completed_actions = [
             h["action"].get("step") if isinstance(h["action"], dict) else h["action"]
             for h in state["history"]
         ]
 
-        # Orden canónico de acciones disponibles
+        plan = state["goal"]
+
+        if isinstance(plan, list):
+            # Consume los pasos del plan en orden
+            for plan_step in plan:
+                action_name = plan_step.get("action") or plan_step.get("step")
+                if action_name not in completed_actions:
+                    return {"step": action_name, "meta": plan_step}
+            return "done"
+
+        # Fallback: sin plan estructurado, usar acciones por defecto
         available_actions = [
             "search_market_data",
             "analyze_trends",
             "generate_summary",
         ]
-
-        remaining = [a for a in available_actions if a not in completed_steps]
-
-        if not remaining:
-            return "done"
-
-        return {"step": remaining[0]}
+        remaining = [a for a in available_actions if a not in completed_actions]
+        return {"step": remaining[0]} if remaining else "done"
 
     async def _act(self, action: dict | str, memory: Memory, tools) -> str | None:
         """

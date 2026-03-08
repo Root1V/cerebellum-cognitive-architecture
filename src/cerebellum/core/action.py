@@ -8,12 +8,14 @@
 
 # cognition/action.py
 
-class Action:
+from abc import ABC, abstractmethod
 
+
+class Action(ABC):
+
+    @abstractmethod
     async def execute(self, task):
-
         """
-        Execute action in environment
+        Execute action in environment.
         """
-
-        pass
+        ...

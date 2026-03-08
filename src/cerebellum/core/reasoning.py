@@ -15,22 +15,28 @@
 
 from abc import ABC, abstractmethod
 
-from .planner import Planner
 from .memory import Memory
 from .tool import Tool
+
 
 class Reasoner(ABC):
 
     @abstractmethod
-    async def execute(self, plan: Planner, memory: Memory, tools: list[Tool]):
+    async def execute(self, plan: list[dict], memory: Memory, tools: dict[str, Tool]):
+        """
+        Execute reasoning over a structured plan.
 
-        pass
-    
+        Parameters
+        ----------
+        plan   : list of step dicts produced by the Planner.
+        memory : memory system dict.
+        tools  : available tools keyed by name.
+        """
+        ...
+
     @abstractmethod
     async def reason(self, context):
-
         """
-        Perform reasoning over context
+        Perform reasoning over context.
         """
-
-        pass
+        ...

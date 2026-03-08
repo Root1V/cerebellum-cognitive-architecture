@@ -3,7 +3,7 @@
 from ..core.planner import Planner
 
 
-class SimplePlanner(Planner):
+class LLMPlanner(Planner):
     """LLM-based planner. Falls back to a default plan when no client is provided."""
 
     def __init__(self, llm_client=None):
@@ -18,7 +18,7 @@ class SimplePlanner(Planner):
 
         # Default plan when no LLM client is configured
         return [
-            {"step": 1, "action": "research", "goal": goal},
-            {"step": 2, "action": "analyze", "goal": goal},
-            {"step": 3, "action": "synthesize", "goal": goal},
+            {"step": 1, "action": "search_market_data", "goal": goal},
+            {"step": 2, "action": "analyze_trends",     "goal": goal},
+            {"step": 3, "action": "generate_summary",   "goal": goal},
         ]

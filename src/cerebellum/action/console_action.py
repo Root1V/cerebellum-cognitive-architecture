@@ -12,9 +12,11 @@
 # Tool es un recurso que puede usar
 # Environment es el mundo donde actúa
 
+from ..core.action import Action
 from ..core.tool import Tool
 
-class ConsoleAction:
+
+class ConsoleAction(Action):
 
     def __init__(self, tools: list[Tool] = None, environment=None):
         self.tools = tools or []

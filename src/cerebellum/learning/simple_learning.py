@@ -1,6 +1,6 @@
 from typing import Any
 
-from cerebellum.core.learning import Experience, Learning
+from ..core.learning import Experience, Learning
 
 
 class SimpleLearning(Learning):
