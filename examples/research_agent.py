@@ -128,7 +128,11 @@ async def main():
         reasoner=reasoner,
         action=action,
         learning=learning,
-        environment=environment
+        environment=environment,
+        controller=controller,
+        tools=tools,
+        tracer=tracer,
+        metrics=metrics,
     )
 
     # -----------------------------
