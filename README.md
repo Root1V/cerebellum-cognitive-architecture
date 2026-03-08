@@ -10,7 +10,7 @@ The core idea: a **cognitive system** built from multiple specialized subsystems
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                          C4 — SYSTEM CONTEXT                                ║
+║                          C4 — SYSTEM CONTEXT                                 ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
           ┌─────────────────────┐

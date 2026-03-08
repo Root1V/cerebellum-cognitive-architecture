@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "Cognitive architecture for AI agents"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "axonium>=0.6.0",
+]
 
 [project.optional-dependencies]
 llama = [
