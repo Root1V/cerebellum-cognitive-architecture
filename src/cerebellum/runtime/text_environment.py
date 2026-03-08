@@ -4,14 +4,17 @@
 # Perception → Attention → Memory → Planning → Reasoning → Action → Learning
 # y todo ocurre dentro de un Environment.
 
-class TextEnvironment:
+from ..core.environment import Environment
 
-    def __init__(self, text):
+
+class TextEnvironment(Environment):
+
+    def __init__(self, text: str):
         self.text = text
 
-    def observe(self):
+    def observe(self) -> str:
         return self.text
 
-    def update(self, action):
+    def update(self, action) -> None:
         print("Environment received:", action)
         

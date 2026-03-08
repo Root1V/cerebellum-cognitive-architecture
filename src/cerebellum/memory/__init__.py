@@ -9,7 +9,7 @@ from .memory_stream import MemoryStream
 
 __all__ = [
     "WorkingMemory",
-    "EpisodicMemory"
-    "SemanticMemory"
-    "MemoryStream"
+    "EpisodicMemory",
+    "SemanticMemory",
+    "MemoryStream",
 ]

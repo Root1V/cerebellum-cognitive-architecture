@@ -1,11 +1,11 @@
 """
-Planning implementations: LLM-based, simple, and graph planners.
+Planning implementations: simple rule-based and LLM-based planners.
 """
 
-from .llm_planner import SimplePlanner
-from .simple_planner import SimplePlanner as BasicPlanner
+from .simple_planner import SimplePlanner
+from .llm_planner import LLMPlanner
 
 __all__ = [
     "SimplePlanner",
-    "BasicPlanner",
+    "LLMPlanner",
 ]

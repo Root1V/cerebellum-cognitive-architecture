@@ -205,3 +205,76 @@ Cognitive Architectures
 +
 Cognitive Agents (Autonomous)
 
+---
+
+
+
+Environment
+     │
+     ▼
+Event Bus
+     │
+     ▼
+Perception
+     │
+     ▼
+Memory Streams
+     │
+     ▼
+Cognitive Controller
+     │
+     ▼
+Reasoning Loop
+     │
+     ▼
+Tools / Actions
+     │
+     ▼
+New Events
+
+
+Las 7 interfaces cognitivas fundamentales
+1. Perception
+2. Attention
+3. Memory
+4. Reasoning
+5. Planning
+6. Action
+7. Learning
+
+Environment
+     │
+     ▼
+Perception
+     │
+     ▼
+Attention
+     │
+     ▼
+Memory
+     │
+     ▼
+Reasoning
+     │
+     ▼
+Planning
+     │
+     ▼
+Action
+     │
+     ▼
+Learning
+
+----
+CognitiveController (Executive)
+    ✅ interpret(perception) → "¿cuál es el goal que el agente debe perseguir?"
+    ✅ is_goal_satisfied(result, goal) → "¿ya terminamos?"
+    ✅ next_goal(history) → "¿hay un subgoal derivado?"
+
+Planner
+    ✅ create_plan(goal) → "¿cómo lo logramos? (pasos concretos)"
+
+CognitiveSystem
+    ✅ Orquesta el ciclo
+    ✅ Decide cuántos ciclos correr y cuándo detenerse
+

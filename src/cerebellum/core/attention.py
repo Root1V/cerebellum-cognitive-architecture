@@ -14,14 +14,18 @@
 # Salida:
 # 3 documentos relevantes
 
-from ..core.perception import Perception
-from ..core.memory import Memory
+from abc import ABC, abstractmethod
 
-class Attention:
+from .perception import Perception
+from .memory import Memory
 
+
+class Attention(ABC):
+
+    @abstractmethod
     async def select(self, perception: Perception, memory: Memory):
-
         """
-        Select relevant information for reasoning
+        Select relevant information for reasoning.
+        Returns a filtered/focused subset of the perception output.
         """
-        pass
+        ...
