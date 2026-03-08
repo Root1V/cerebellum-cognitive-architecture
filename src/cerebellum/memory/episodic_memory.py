@@ -25,9 +25,9 @@ class EpisodicMemory(Memory):
     # --- Domain-specific API ---
 
     async def store_event(self, event: dict) -> None:
-        """Almacena un evento completo (goal + result)."""
-        self.events.append(event)
+        """Almacena un evento completo (goal + result). Alias semántico de update()."""
+        await self.update(event)
 
     async def recall(self, query: str) -> list:
-        """Recupera eventos que contengan el query en su representación textual."""
-        return [e for e in self.events if query in str(e)]
+        """Recupera eventos relevantes. Alias semántico de retrieve()."""
+        return await self.retrieve(query)

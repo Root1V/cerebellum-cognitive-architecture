@@ -155,14 +155,24 @@ class LoopReasoner(Reasoner):
         Condición de parada del loop.
 
         El objetivo se considera alcanzado cuando:
-        - se ejecutó 'generate_summary', o
-        - la última acción fue 'done' (last_result is None)
+        - last_result es None (la acción fue 'done'), o
+        - todos los pasos del plan fueron completados.
+
+        La lógica es general: no depende de nombres de acción específicos,
+        sino de que el historial cubra todos los pasos del plan actual.
         """
         if last_result is None:
             return True
 
-        actions_done = [
+        completed = {
             h["action"].get("step") if isinstance(h["action"], dict) else h["action"]
             for h in state["history"]
-        ]
-        return "generate_summary" in actions_done
+        }
+
+        plan = state["goal"]
+        if isinstance(plan, list):
+            plan_steps = {step.get("action") or step.get("step") for step in plan}
+            return plan_steps.issubset(completed)
+
+        # Fallback sin plan estructurado: completo cuando todos los defaults terminaron
+        return {"search_market_data", "analyze_trends", "generate_summary"}.issubset(completed)
