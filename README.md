@@ -1,96 +1,226 @@
 # Cerebellum
 
-Cerebellum is a "Cognitive Framework" proposal for a modern cognitive architecture for AI agents — essentially the blueprint that many research labs are exploring to build systems closer to general intelligence.
+A cognitive architecture framework for building AI agents — not just LLM wrappers, but systems with memory, planning, reasoning, and learning working together as a unified cognitive loop.
 
-The core idea: a **cognitive system** built from multiple specialized cognitive subsystems working together.
+The core idea: a **cognitive system** built from multiple specialized subsystems, where the LLM is one component of the reasoning engine, not the entire system.
 
 ---
 
-## Architecture Overview
+## C4 Architecture — Level 1: System Context
 
 ```
-                 USER
-                   │
-                   ▼
-             Perception Layer
-                   │
-                   ▼
-            Cognitive Controller
-      ┌───────────┼───────────┐
-      │           │           │
-   Memory      Reasoning     Planning
-      │           │           │
-      └───────────┼───────────┘
-                  │
-               Tool Layer
-                  │
-             Environment
-                  │
-             Observability
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          C4 — SYSTEM CONTEXT                                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+          ┌─────────────────────┐
+          │      Developer /    │
+          │    Application      │   Sends tasks, receives results.
+          │    [Person/System]  │   Uses cerebellum as a library
+          └──────────┬──────────┘
+                     │  agent.run("task")
+                     ▼
+          ┌──────────────────────────────────────────┐
+          │                                          │
+          │           CEREBELLUM                     │
+          │      Cognitive Architecture              │
+          │                                          │
+          │  A framework for building cognitive AI   │
+          │  agents with full perception → memory    │
+          │  → planning → reasoning → action loop.   │
+          │                                          │
+          │  [Python library — cerebellum-arch]      │
+          │                                          │
+          └───┬──────────────┬──────────────┬────────┘
+              │              │              │
+              ▼              ▼              ▼
+  ┌───────────────┐  ┌──────────────┐  ┌───────────────────┐
+  │  Local LLM    │  │ External     │  │  World /          │
+  │  Server       │  │ Tools        │  │  Environment      │
+  │               │  │              │  │                   │
+  │ LM Studio,    │  │ Web search,  │  │ APIs, databases,  │
+  │ Ollama,       │  │ databases,   │  │ file systems,     │
+  │ llama.cpp,    │  │ APIs,        │  │ knowledge bases,  │
+  │ OpenAI API    │  │ code exec.   │  │ system prompts    │
+  │ [HTTP/REST]   │  │ [API calls]  │  │ [any source]      │
+  └───────────────┘  └──────────────┘  └───────────────────┘
 ```
 
-> **Key insight:** The LLM lives *inside* the Reasoning Engine — it is not the entire system.
+---
+
+## C4 Architecture — Level 2: Containers
+
+```
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          C4 — CONTAINERS                                     ║
+║               (packages inside the cerebellum library)                       ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+  Developer
+      │
+      │  agent.run("Analyze AI market in LATAM")
+      ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          cerebellum library                              │
+│                                                                          │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │                      CognitiveAgent                              │   │
+│  │               [core/agent.py — entry point]                      │   │
+│  │   Accepts a task string. Delegates to CognitiveSystem.run().     │   │
+│  └───────────────────────────────┬──────────────────────────────────┘   │
+│                                  │                                       │
+│                                  ▼                                       │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │                     CognitiveSystem                              │   │
+│  │              [runtime/cognitive_system.py — orchestrator]        │   │
+│  │                                                                  │   │
+│  │  Runs the full cognitive loop in 9 steps:                        │   │
+│  │  0. Environment.observe()  →  world state                        │   │
+│  │  1. Perception.perceive()  →  structured input                   │   │
+│  │  2. Attention.select()     →  focused context                    │   │
+│  │  3. Controller.interpret() →  goal                               │   │
+│  │  4. Memory.recall()        →  past context                       │   │
+│  │  5. Planner.create_plan()  →  steps                              │   │
+│  │  6. Reasoner.execute()     →  result                             │   │
+│  │  6.5 Action.execute()      →  environmental effect               │   │
+│  │  7. Learning.update()      →  experience stored                  │   │
+│  │  8. Memory.store_event()   →  episodic update                    │   │
+│  │  9. Controller.is_goal_satisfied() → recurse or return           │   │
+│  └──┬────────┬──────────┬──────────┬──────────┬──────────┬─────────┘   │
+│     │        │          │          │          │          │             │
+│     ▼        ▼          ▼          ▼          ▼          ▼             │
+│  ┌──────┐ ┌──────┐ ┌────────┐ ┌────────┐ ┌───────┐ ┌─────────────┐   │
+│  │ Per- │ │Atten-│ │Control-│ │Memory  │ │Planner│ │  Reasoner   │   │
+│  │ cep- │ │tion  │ │  ler   │ │System  │ │       │ │  (ReAct     │   │
+│  │ tion │ │      │ │        │ │        │ │Simple-│ │   Loop)     │   │
+│  │      │ │Simp- │ │Simple- │ │Working │ │Planner│ │             │   │
+│  │Text- │ │leAt- │ │Control-│ │Episodic│ │LLM-   │ │LoopReasoner │   │
+│  │Perc- │ │ten-  │ │  ler   │ │Semantic│ │Planner│ │LLMReasoner  │   │
+│  │tion  │ │tion  │ │        │ │Proced- │ │Task-  │ │HierarchReas-│   │
+│  │Multi-│ │      │ │Goal-   │ │ural    │ │Graph- │ │oner         │   │
+│  │modal │ │      │ │Manager │ │Vector  │ │Planner│ │Recursive-   │   │
+│  │      │ │      │ │Attn-   │ │Graph   │ │       │ │Reasoner     │   │
+│  │      │ │      │ │Manager │ │Stream  │ │       │ │             │   │
+│  └──────┘ └──────┘ └────────┘ └────────┘ └───────┘ └──────┬──────┘   │
+│                                                             │          │
+│  ┌─────────────┐   ┌─────────────┐   ┌────────────────┐   │          │
+│  │   Action    │   │ Environment │   │  Observability │   │          │
+│  │             │   │             │   │                │   │          │
+│  │ConsoleAction│   │TextEnvironm.│   │ Tracer         │   │          │
+│  │             │   │SystemPrompt │   │ Metrics        │   │          │
+│  │  Produces   │   │KnowledgeBase│   │                │   │          │
+│  │ env effects │   │APIEnvironm. │   │ Traces every   │   │          │
+│  │ after reason│   │             │   │ step of the    │   │          │
+│  └─────────────┘   └─────────────┘   │ cognitive loop │   │          │
+│                                       └────────────────┘   │          │
+│  ┌──────────────────────────────────────────────────────────▼──────┐  │
+│  │                    LLM Adapter                                   │  │
+│  │                  [llm/llama_adapter.py]                          │  │
+│  │                                                                  │  │
+│  │  Wraps axonium SDK. Exposes complete(prompt) and chat(messages). │  │
+│  │  Used by LLMPlanner and LLMReasoner as llm_client.               │  │
+│  └───────────────────────────────┬──────────────────────────────────┘  │
+│                                  │                                      │
+└──────────────────────────────────┼──────────────────────────────────────┘
+                                   │  HTTP / REST
+                                   ▼
+                       ┌───────────────────────┐
+                       │   Local LLM Server    │
+                       │  (Ollama, LM Studio,  │
+                       │   llama.cpp, OpenAI)  │
+                       └───────────────────────┘
+```
+
+> **Key insight:** The LLM lives *inside* the Reasoning Engine and the Planner — it is a component, not the entire system.
+
+---
+
+## Cognitive Loop — Step by Step
+
+```
+  Task input
+      │
+      ▼
+  ┌─────────────────────────────────────────────────┐
+  │  Step 0   Environment.observe()                 │  ← world state enriches all
+  │  Step 1   Perception.perceive(input)            │  ← raw → structured
+  │  Step 2   Attention.select(perception, memory)  │  ← filter relevance
+  │  Step 3   Controller.interpret(focused)         │  ← set goal
+  │  Step 4   Memory.recall(goal)                   │  ← past context
+  │  Step 5   Planner.create_plan(goal, context)    │  ← decompose
+  │  Step 6   Reasoner.execute(plan, memory, tools) │  ← think (ReAct loop)
+  │  Step 6.5 Action.execute(result)                │  ← act in the world
+  │  Step 7   Learning.update(experience)           │  ← learn
+  │  Step 8   Memory.store_event(...)               │  ← remember
+  │  Step 9   Controller.is_goal_satisfied()?       │  ── no ──▶ recurse
+  └─────────────────────────────────────────────────┘       │
+                                                           yes
+                                                             ▼
+                                                         return result
+```
 
 ---
 
 ## Components
 
-### 1. Perception Layer
-Interprets the world. Processes inputs such as text, audio, images, documents, APIs, and system events, then transforms them into structured representations: intent, entities, context, and goals.
+### Perception
+Processes raw input (text, multimodal) into structured `{"content", "intent", "context"}`.
 
-### 2. Cognitive Controller
-The "executive brain" — analogous to the human prefrontal cortex. Responsible for:
-- Goal tracking
-- Task switching
-- Agent coordination
-- Reasoning orchestration
+### Attention
+Filters what is relevant from perception + memory. Only focused context reaches planning.
 
-Can be implemented as an LLM, a planner, a state machine, or a policy model.
+### Cognitive Controller
+The executive layer — translates perception into a goal (`interpret`), evaluates if the goal was met (`is_goal_satisfied`), and generates sub-goals if not (`next_goal`). Analogous to the prefrontal cortex.
 
-### 3. Memory System
-A complete cognitive architecture requires multiple memory types:
+### Memory System
 
-| Type | Description | Examples |
+| Type | Class | Role |
 |---|---|---|
-| **Working Memory** | Temporary memory for current thought | Current task, recent reasoning steps |
-| **Episodic Memory** | Records of past experiences | Conversation history, past actions |
-| **Semantic Memory** | World knowledge | Facts, documents, knowledge base |
-| **Procedural Memory** | Knowing how to do things | Tool usage, workflows, skills |
+| Working | `WorkingMemory` | Current reasoning context |
+| Episodic | `EpisodicMemory` | Past experiences and events |
+| Semantic | `SemanticMemory` | World knowledge / facts |
+| Procedural | `ProceduralMemory` | How-to knowledge / skills |
+| Vector | `VectorMemory` | Similarity search |
+| Graph | `GraphMemory` | Relational knowledge |
+| Stream | `MemoryStream` | Temporal event stream |
 
-Typically implemented using vector DBs, graph DBs, or document stores.
+### Planner
+Decomposes goals into ordered steps. `SimplePlanner` derives step names directly from registered tools — tool names become the plan, no domain knowledge hardcoded.
 
-### 4. Reasoning Engine
-Where the LLM (or LRM — Large Reasoning Model) lives. Performs analysis, deduction, hypothesis generation, and problem solving using techniques like:
-- Chain-of-thought
-- Tree-of-thought
-- Recursive reasoning
-- HRM (Hierarchical Reasoning Model)
+### Reasoning Engine
+Implements various reasoning strategies over a plan:
 
-### 5. Planner
-Decomposes complex goals into actionable subtasks using LLMs, planning algorithms, or task graphs.
+| Class | Strategy |
+|---|---|
+| `LoopReasoner` | ReAct — think → invoke → evaluate loop |
+| `LLMReasoner` | Sequential LLM delegation per step |
+| `HierarchicalReasoner` | Hierarchical planning + worker decomposition |
+| `RecursiveReasoner` | Recursive sub-problem decomposition |
 
-### 6. Tool / Action Layer
-Enables interaction with the real world: API calls, database queries, web browsing, code execution, and more. Specialized agents operate at this layer.
+### Action
+Produces **environmental effects** after reasoning — prints, writes, calls APIs. Distinct from tool invocation inside the reasoning loop.
 
-### 7. Learning Loop
-Allows the system to learn from experience:
+### Environment
+World context observable by the agent. Four implementations:
 
-```
-Action → Observation → Evaluation → Memory Update
-```
+| Class | Use case |
+|---|---|
+| `TextEnvironment` | Plain text context string |
+| `SystemPromptEnvironment` | LLM system prompt + constraints |
+| `KnowledgeBaseEnvironment` | Document store / RAG |
+| `APIEnvironment` | External API state (override `_fetch()`) |
 
-This enables prompt improvement, workflow learning, and decision optimization.
+### LLM Adapter
+Wraps local LLM servers via the `axonium` SDK. Exposes `complete(prompt)` and `chat(messages)` used by `LLMPlanner` and `LLMReasoner`.
 
----
-
-## Observability
-A first-class citizen in this architecture. Monitors reasoning steps, tool usage, latency, errors, and decision paths from the ground up — not as an afterthought.
+### Observability
+`Tracer` and `Metrics` are first-class citizens — wired into `CognitiveSystem` and active at every step of the loop.
 
 ---
 
 ## Motivation
 
-Most current frameworks only cover a small fraction of a full cognitive architecture:
+Most current frameworks cover only a fraction of a full cognitive architecture:
 
 | Framework | Coverage |
 |---|---|
@@ -98,22 +228,16 @@ Most current frameworks only cover a small fraction of a full cognitive architec
 | AutoGen | Multi-agent coordination |
 | Semantic Kernel | Tool orchestration |
 
-**None implement a complete cognitive architecture.** Cerebellum aims to change that.
+**None implement a complete cognitive loop.** Cerebellum aims to change that.
 
 ---
 
 ## Vision
 
-The next generation of AI systems will likely be built from the convergence of:
+The next generation of AI systems converges:
 
 ```
-Foundation Models
-+
-Reasoning Models
-+
-Cognitive Architectures
-+
-Cognitive Agents (Autonomous)
+Foundation Models  +  Reasoning Models  +  Cognitive Architectures  +  Autonomous Agents
 ```
 
 ---
@@ -123,15 +247,21 @@ Cognitive Agents (Autonomous)
 **Requirements:** Python >= 3.13
 
 ```bash
-# Clone the repository
+# Clone
 git clone https://github.com/Root1V/cerebellum-architecture.git
 cd cerebellum
 
-# Install dependencies
+# Install
 pip install -e .
 
-# Run
-python main.py
+# Run basic example
+python examples/research_basic.py
+
+# Run full agent example
+python examples/research_agent.py
+
+# Run with local LLM (requires LLM_BASE_URL env var)
+LLM_BASE_URL=http://localhost:8080 python examples/llama_cerebellum_example.py
 ```
 
 ---
@@ -141,57 +271,37 @@ python main.py
 ```
 cerebellum/
 ├── examples/
-│   └── research_agent.py        # Example: research agent using the full system
+│   ├── research_basic.py              # Minimal cognitive loop
+│   ├── research_agent.py              # Full agent with tools + observability
+│   └── llama_cerebellum_example.py    # Local LLM via axonium SDK
 ├── src/
 │   └── cerebellum/
-│       ├── __init__.py
-│       ├── core/                # Abstract interfaces (ABCs)
-│       │   ├── agent.py         # CognitiveAgent — entry point for running tasks
-│       │   ├── attention.py     # Attention — filter relevant information
-│       │   ├── controller.py    # CognitiveController — orchestrates the cognitive loop
-│       │   ├── learning.py      # Learning — updates from experience
-│       │   ├── memory.py        # Memory — abstract store/retrieve interface
-│       │   ├── perception.py    # Perception — processes raw input
-│       │   ├── planner.py       # Planner — decomposes goals into steps
-│       │   ├── reasoning.py     # Reasoner — executes a plan
-│       │   ├── action.py        # Action — executes actions in the environment
-│       │   ├── tool.py          # Tool — abstract interface for external tools
-│       │   └── environment.py   # Environment — world the agent interacts with
-│       ├── controller/          # Controller implementations
-│       │   ├── simple_controller.py
-│       │   ├── attention_manager.py
-│       │   └── goal_manager.py
-│       ├── memory/              # Memory implementations
-│       │   ├── working_memory.py
-│       │   ├── episodic_memory.py
-│       │   ├── semantic_memory.py
-│       │   ├── procedural_memory.py
-│       │   ├── memory_stream.py
-│       │   ├── vector_memory.py
-│       │   └── graph_memory.py
-│       ├── perception/          # Perception implementations
-│       │   ├── text_perception.py
-│       │   └── multimodal_perception.py
-│       ├── planners/            # Planner implementations
-│       │   ├── llm_planner.py
-│       │   ├── simple_planner.py
-│       │   └── task_graph_planner.py
-│       ├── reasoning/           # Reasoning implementations
-│       │   ├── llm_reasoner.py
-│       │   ├── recursive_reasoner.py
-│       │   ├── tree_reasoner.py
-│       │   └── hrm_reasoner.py
-│       ├── runtime/             # Cognitive system loop
-│       │   ├── cognitive_system.py
-│       │   ├── event_bus.py
-│       │   └── event_loop.py
-│       ├── tools/               # Tool implementations
-│       │   ├── web_search.py
-│       │   ├── code_executor.py
-│       │   └── database_tool.py
-│       └── observability/       # Tracing and metrics
-│           ├── tracer.py
-│           └── metrics.py
+│       ├── core/                      # Abstract interfaces (ABCs)
+│       │   ├── agent.py               # CognitiveAgent
+│       │   ├── controller.py          # CognitiveController
+│       │   ├── perception.py          # Perception
+│       │   ├── attention.py           # Attention
+│       │   ├── memory.py              # Memory
+│       │   ├── planner.py             # Planner
+│       │   ├── reasoning.py           # Reasoner
+│       │   ├── action.py              # Action
+│       │   ├── tool.py                # Tool
+│       │   ├── environment.py         # Environment
+│       │   └── learning.py            # Learning
+│       ├── runtime/                   # Orchestration only
+│       │   └── cognitive_system.py    # 9-step cognitive loop
+│       ├── controller/                # Controller implementations
+│       ├── perception/                # Perception implementations
+│       ├── attention/                 # Attention implementations
+│       ├── memory/                    # 7 memory types
+│       ├── planners/                  # SimplePlanner, LLMPlanner, TaskGraphPlanner
+│       ├── reasoning/                 # LoopReasoner, LLMReasoner, HRM, Recursive
+│       ├── action/                    # ConsoleAction
+│       ├── environment/               # 4 environment types
+│       ├── tools/                     # WebSearchTool, DatabaseTool, CodeExecutor
+│       ├── llm/                       # LlamaAdapter (axonium SDK)
+│       ├── learning/                  # SimpleLearning
+│       └── observability/             # Tracer, Metrics
 ├── main.py
 └── pyproject.toml
 ```
@@ -200,11 +310,10 @@ cerebellum/
 
 ## Status
 
-> This project is in early research and development. The architecture described here serves as the conceptual foundation for the implementation.
+Early development. The architecture is functional end-to-end. LLM integration requires a local server (Ollama, LM Studio, llama.cpp) or compatible API.
 
-
----
-Principies:
-1. Event-Driven Cognition
-2. Memory Streams (tipo cerebro humano)
-3. Cognitive Loop completo
+**Design principles:**
+1. Each core ABC has its own implementation package — no logic in `runtime/`
+2. `runtime/` is orchestration only — `CognitiveSystem` wires the loop
+3. The Planner decides *what* steps to run; the Reasoner decides *how* to execute them
+4. Tool names are the plan — `SimplePlanner` derives steps from registered tools directly
