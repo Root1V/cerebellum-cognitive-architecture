@@ -17,7 +17,7 @@ class SemanticMemory(Memory):
     async def store(self, key, value) -> None:
         self.knowledge[key] = value
 
-    async def retrieve(self, query) -> any:
+    async def retrieve(self, query) -> Any:
         return self.knowledge.get(query)
 
     async def update(self, item: dict) -> None:

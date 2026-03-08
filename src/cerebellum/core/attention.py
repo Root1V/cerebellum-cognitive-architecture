@@ -16,16 +16,19 @@
 
 from abc import ABC, abstractmethod
 
-from .perception import Perception
-from .memory import Memory
-
 
 class Attention(ABC):
 
     @abstractmethod
-    async def select(self, perception: Perception, memory: Memory):
+    async def select(self, perception: dict, memory: dict):
         """
         Select relevant information for reasoning.
+        
+        Parameters
+        ----------
+        perception : output dict from Perception.perceive() — structured representation of input.
+        memory     : the full memory system dict {"episodic": ..., "working": ..., etc.}.
+        
         Returns a filtered/focused subset of the perception output.
         """
         ...
