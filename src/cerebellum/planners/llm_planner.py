@@ -4,7 +4,18 @@ from ..core.planner import Planner
 
 
 class LLMPlanner(Planner):
-    """LLM-based planner. Falls back to a default plan when no client is provided."""
+    """
+    LLM-based planner. Falls back to a default plan when no client is provided.
+
+    El llm_client debe implementar:
+        async complete(prompt: str) -> str
+
+    Compatible con cerebellum.llm.LlamaAdapter (axonium-sdk).
+
+    Ejemplo:
+        from cerebellum.llm import LlamaAdapter
+        planner = LLMPlanner(llm_client=LlamaAdapter(model="Mixtral-7B..."))
+    """
 
     def __init__(self, llm_client=None):
         self.llm = llm_client

@@ -6,5 +6,10 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = []
 
+[project.optional-dependencies]
+llama = [
+  "axonium>=0.6.0",
+]
+
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -6,6 +6,18 @@ from ..core.tool import Tool
 
 
 class LLMReasoner(Reasoner):
+    """
+    Reasoner basado en LLM.
+
+    El llm_client debe implementar:
+        async complete(prompt: str) -> str
+
+    Compatible con cerebellum.llm.LlamaAdapter (axonium-sdk).
+
+    Ejemplo:
+        from cerebellum.llm import LlamaAdapter
+        reasoner = LLMReasoner(llm_client=LlamaAdapter(model="Mixtral-7B..."))
+    """
 
     def __init__(self, llm_client=None):
         self.llm = llm_client
