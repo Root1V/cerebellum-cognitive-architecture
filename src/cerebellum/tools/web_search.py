@@ -6,4 +6,4 @@ class WebSearchTool(Tool):
 
     async def execute(self, query):
 
-        return f"results for {query}"
+        return f"Search results for {query}"

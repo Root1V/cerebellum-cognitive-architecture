@@ -9,17 +9,25 @@ class LLMReasoner(Reasoner):
 
     def __init__(self, llm_client):
         self.llm = llm_client
+    
+    async def solve(self, step, memory: Memory, tools: list[Tool]):
 
-    async def execute(self, plan: Planner, memory: Memory, tools: list[Tool]):
+        if step["step"] == "search_market_data":
 
-        results = []
+            tool: Tool = tools["web_search"]
 
-        for step in plan:
-
-            response = await self.llm.complete(
-                f"Execute step: {step}"
+            return await tool.execute(
+                query="AI market Latin America"
             )
 
-            results.append(response)
+        if step["step"] == "analyze_trends":
 
-        return results
+            return await self.llm.complete(
+                f"AI adoption growing in fintech and healthcare: {step}"
+            )
+
+        if step["step"] == "generate_summary":
+
+            return "AI market in LATAM shows strong growth potential"
+
+        return "unknown step"

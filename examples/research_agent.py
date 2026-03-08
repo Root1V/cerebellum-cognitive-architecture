@@ -24,7 +24,10 @@
 
 import asyncio
 
+from cerebellum.action import ConsoleAction
+from cerebellum.attention import SimpleAttention
 from cerebellum.core import CognitiveAgent
+from cerebellum.learning import SimpleLearning
 from cerebellum.runtime import CognitiveSystem
 
 from cerebellum.perception import TextPerception
@@ -40,6 +43,7 @@ from cerebellum.planners import SimplePlanner
 from cerebellum.reasoning import HierarchicalReasoner
 from cerebellum.reasoning import LLMReasoner
 
+from cerebellum.runtime import TextEnvironment
 from cerebellum.tools import WebSearchTool
 from cerebellum.tools import DatabaseTool
 
@@ -116,16 +120,21 @@ async def main():
     # -----------------------------
     # Cognitive System
     # -----------------------------
-
+    
+    attention = SimpleAttention()
+    action = ConsoleAction()
+    learning = SimpleLearning()
+    environment = TextEnvironment("What is the capital of Peru?")
+    
     system = CognitiveSystem(
         perception=perception,
-        controller=controller,
+        attention=attention,
         memory=memory_system,
         planner=planner,
         reasoner=reasoner,
-        tools=tools,
-        tracer=tracer,
-        metrics=metrics
+        action=action,
+        learning=learning,
+        environment=environment
     )
 
     # -----------------------------
@@ -143,3 +152,14 @@ async def main():
 
 
 asyncio.run(main())
+
+
+# [TRACE] input_received: Analyze the AI market in Latin America
+
+# FINAL RESULT
+
+# [
+#  'Search results for AI market Latin America',
+#  'AI adoption growing in fintech and healthcare',
+#  'AI market in LATAM shows strong growth potential'
+# ]

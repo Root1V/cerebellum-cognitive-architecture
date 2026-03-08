@@ -1,7 +1,10 @@
 # RLM Reasoning
 
 
-class RecursiveReasoner:
+from ..core.reasoning import Reasoner
+
+
+class RecursiveReasoner(Reasoner):
 
     async def solve(self, problem):
 

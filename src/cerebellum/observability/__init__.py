@@ -2,4 +2,11 @@
 Observability: tracing and metrics for the cognitive system.
 """
 
-__all__: list[str] = []  # tracer and metrics are pending implementation
+from .tracer import Tracer
+from .metrics import Metrics
+
+__all__ = [
+    "Tracer",
+    "Metrics",
+]
+

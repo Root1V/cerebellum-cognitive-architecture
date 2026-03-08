@@ -12,6 +12,6 @@ class MemoryStream:
             "data": event["data"]
         })
 
-    async def recent(self, n=10):
+    async def recent(self, n=5):
 
         return self.memories[-n:]
