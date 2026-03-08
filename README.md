@@ -6,6 +6,27 @@ The core idea: a **cognitive system** built from multiple specialized subsystems
 
 ---
 
+## Architecture - Level 0: Cognitive
+                  USER
+                   │
+                   ▼
+             Perception Layer
+                   │
+                   ▼
+            Cognitive Controller
+      ┌───────────┼───────────┐
+      │           │           │
+   Memory      Reasoning     Planning
+      │           │           │
+      └───────────┼───────────┘
+                  │
+               Tool Layer
+                  │
+             Environment
+                  │
+             Observability
+
+
 ## C4 Architecture — Level 1: System Context
 
 ```
@@ -61,15 +82,15 @@ The core idea: a **cognitive system** built from multiple specialized subsystems
       │  agent.run("Analyze AI market in LATAM")
       ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                          cerebellum library                              │
-│                                                                          │
+│                          cerebellum library                             │
+│                                                                         │
 │  ┌──────────────────────────────────────────────────────────────────┐   │
 │  │                      CognitiveAgent                              │   │
 │  │               [core/agent.py — entry point]                      │   │
 │  │   Accepts a task string. Delegates to CognitiveSystem.run().     │   │
 │  └───────────────────────────────┬──────────────────────────────────┘   │
-│                                  │                                       │
-│                                  ▼                                       │
+│                                  │                                      │
+│                                  ▼                                      │
 │  ┌──────────────────────────────────────────────────────────────────┐   │
 │  │                     CognitiveSystem                              │   │
 │  │              [runtime/cognitive_system.py — orchestrator]        │   │
@@ -86,40 +107,40 @@ The core idea: a **cognitive system** built from multiple specialized subsystems
 │  │  7. Learning.update()      →  experience stored                  │   │
 │  │  8. Memory.store_event()   →  episodic update                    │   │
 │  │  9. Controller.is_goal_satisfied() → recurse or return           │   │
-│  └──┬────────┬──────────┬──────────┬──────────┬──────────┬─────────┘   │
-│     │        │          │          │          │          │             │
-│     ▼        ▼          ▼          ▼          ▼          ▼             │
-│  ┌──────┐ ┌──────┐ ┌────────┐ ┌────────┐ ┌───────┐ ┌─────────────┐   │
-│  │ Per- │ │Atten-│ │Control-│ │Memory  │ │Planner│ │  Reasoner   │   │
-│  │ cep- │ │tion  │ │  ler   │ │System  │ │       │ │  (ReAct     │   │
-│  │ tion │ │      │ │        │ │        │ │Simple-│ │   Loop)     │   │
-│  │      │ │Simp- │ │Simple- │ │Working │ │Planner│ │             │   │
-│  │Text- │ │leAt- │ │Control-│ │Episodic│ │LLM-   │ │LoopReasoner │   │
-│  │Perc- │ │ten-  │ │  ler   │ │Semantic│ │Planner│ │LLMReasoner  │   │
-│  │tion  │ │tion  │ │        │ │Proced- │ │Task-  │ │HierarchReas-│   │
-│  │Multi-│ │      │ │Goal-   │ │ural    │ │Graph- │ │oner         │   │
-│  │modal │ │      │ │Manager │ │Vector  │ │Planner│ │Recursive-   │   │
-│  │      │ │      │ │Attn-   │ │Graph   │ │       │ │Reasoner     │   │
-│  │      │ │      │ │Manager │ │Stream  │ │       │ │             │   │
-│  └──────┘ └──────┘ └────────┘ └────────┘ └───────┘ └──────┬──────┘   │
-│                                                             │          │
-│  ┌─────────────┐   ┌─────────────┐   ┌────────────────┐   │          │
-│  │   Action    │   │ Environment │   │  Observability │   │          │
-│  │             │   │             │   │                │   │          │
-│  │ConsoleAction│   │TextEnvironm.│   │ Tracer         │   │          │
-│  │             │   │SystemPrompt │   │ Metrics        │   │          │
-│  │  Produces   │   │KnowledgeBase│   │                │   │          │
-│  │ env effects │   │APIEnvironm. │   │ Traces every   │   │          │
-│  │ after reason│   │             │   │ step of the    │   │          │
-│  └─────────────┘   └─────────────┘   │ cognitive loop │   │          │
-│                                       └────────────────┘   │          │
-│  ┌──────────────────────────────────────────────────────────▼──────┐  │
-│  │                    LLM Adapter                                   │  │
-│  │                  [llm/llama_adapter.py]                          │  │
-│  │                                                                  │  │
-│  │  Wraps axonium SDK. Exposes complete(prompt) and chat(messages). │  │
-│  │  Used by LLMPlanner and LLMReasoner as llm_client.               │  │
-│  └───────────────────────────────┬──────────────────────────────────┘  │
+│  └──┬────────┬──────────┬──────────┬──────────┬──────────┬──────────┘   │
+│     │        │          │          │          │          │              │
+│     ▼        ▼          ▼          ▼          ▼          ▼              │
+│  ┌──────┐ ┌──────┐ ┌────────┐ ┌────────┐ ┌───────┐ ┌─────────────┐      │
+│  │ Per- │ │Atten-│ │Control-│ │Memory  │ │Planner│ │  Reasoner   │      │
+│  │ cep- │ │tion  │ │  ler   │ │System  │ │       │ │  (ReAct     │      │
+│  │ tion │ │      │ │        │ │        │ │Simple-│ │   Loop)     │      │
+│  │      │ │Simp- │ │Simple- │ │Working │ │Planner│ │             │.     │ 
+│  │Text- │ │leAt- │ │Control-│ │Episodic│ │LLM-   │ │LoopReasoner │      │
+│  │Perc- │ │ten-  │ │  ler   │ │Semantic│ │Planner│ │LLMReasoner  │      │
+│  │tion  │ │tion  │ │        │ │Proced- │ │Task-  │ │HierarchReas-│      │
+│  │Multi-│ │      │ │Goal-   │ │ural    │ │Graph- │ │oner         │      │ 
+│  │modal │ │      │ │Manager │ │Vector  │ │Planner│ │Recursive-   │      │
+│  │      │ │      │ │Attn-   │ │Graph   │ │       │ │Reasoner     │      │
+│  │      │ │      │ │Manager │ │Stream  │ │       │ │             │      │
+│  └──────┘ └──────┘ └────────┘ └────────┘ └───────┘ └──────┬──────┘      │
+│                                                           │             │
+│  ┌─────────────┐   ┌─────────────┐   ┌────────────────┐   │             │
+│  │   Action    │   │ Environment │   │  Observability │   │             │
+│  │             │   │             │   │                │   │             │
+│  │ConsoleAction│   │TextEnvironm.│   │ Tracer         │   │             │
+│  │             │   │SystemPrompt │   │ Metrics        │   │             │
+│  │  Produces   │   │KnowledgeBase│   │                │   │             │
+│  │ env effects │   │APIEnvironm. │   │ Traces every   │   │             │
+│  │ after reason│   │             │   │ step of the    │   │             │
+│  └─────────────┘   └─────────────┘   │ cognitive loop │   │             │
+│                                      └────────────────┘   │             │
+│  ┌────────────────────────────────────────────────────────▼─────────┐   │
+│  │                    LLM Adapter                                   │   │
+│  │                  [llm/llama_adapter.py]                          │   │
+│  │                                                                  │   │
+│  │  Wraps axonium SDK. Exposes complete(prompt) and chat(messages). │   │
+│  │  Used by LLMPlanner and LLMReasoner as llm_client.               │   │
+│  └───────────────────────────────┬──────────────────────────────────┘   │
 │                                  │                                      │
 └──────────────────────────────────┼──────────────────────────────────────┘
                                    │  HTTP / REST
