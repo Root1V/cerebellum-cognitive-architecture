@@ -166,3 +166,4 @@ asyncio.run(main())
 # FINAL RESULT
 
 # [{'iteration': 1, 'action': {'step': 'search_market_data', 'meta': {'step': 1, 'action': 'search_market_data', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'Search results for AI market Latin America'}, {'iteration': 2, 'action': {'step': 'analyze_trends', 'meta': {'step': 2, 'action': 'analyze_trends', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'AI adoption growing in fintech and healthcare'}, {'iteration': 3, 'action': {'step': 'generate_summary', 'meta': {'step': 3, 'action': 'generate_summary', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'AI market in LATAM shows strong growth potential'}]
+

@@ -22,9 +22,6 @@ class LLMReasoner(Reasoner):
     def __init__(self, llm_client=None):
         self.llm = llm_client
 
-    async def reason(self, context: dict):
-        return await self.solve(context, {}, {})
-
     async def execute(
         self,
         plan: list[dict],

@@ -11,9 +11,6 @@ class HierarchicalReasoner(Reasoner):
         self.planner = planner
         self.worker = worker
 
-    async def reason(self, context: dict):
-        return await self.execute(context, {}, {})
-
     async def execute(
         self,
         goal,
