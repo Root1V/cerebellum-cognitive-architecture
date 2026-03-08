@@ -8,18 +8,19 @@
 # procedural memory
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class Memory(ABC):
 
     @abstractmethod
-    async def store(self, key, value):
+    async def store(self, key: str, value: Any) -> None:
         pass
 
     @abstractmethod
-    async def retrieve(self, query):
+    async def retrieve(self, query: str) -> Any:
         pass
 
     @abstractmethod
-    async def update(self, item):
+    async def update(self, item: Any) -> None:
         pass

@@ -9,12 +9,13 @@
 # cognition/action.py
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class Action(ABC):
 
     @abstractmethod
-    async def execute(self, task):
+    async def execute(self, task: dict) -> Any:
         """
         Execute action in environment.
         """

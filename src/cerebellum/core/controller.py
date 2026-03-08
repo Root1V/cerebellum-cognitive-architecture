@@ -2,8 +2,6 @@
 
 from abc import ABC, abstractmethod
 
-from .perception import Perception
-
 
 class CognitiveController(ABC):
     """
@@ -17,8 +15,8 @@ class CognitiveController(ABC):
     """
 
     @abstractmethod
-    async def interpret(self, perception: Perception) -> dict:
-        """Traduce la percepción en un goal estructurado."""
+    async def interpret(self, focused: dict) -> dict:
+        """Traduce la percepción filtrada en un goal estructurado."""
         pass
 
     @abstractmethod

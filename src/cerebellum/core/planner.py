@@ -16,8 +16,8 @@ from abc import ABC, abstractmethod
 class Planner(ABC):
 
     @abstractmethod
-    async def create_plan(self, goal, context):
+    async def create_plan(self, goal: dict, context: list | None = None) -> list[dict]:
         """
-        Decompose goal into tasks
+        Decompose goal into tasks.
         """
         pass

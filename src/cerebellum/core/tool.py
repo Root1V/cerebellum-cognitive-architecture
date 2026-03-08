@@ -1,6 +1,7 @@
 # core/tool.py
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class Tool(ABC):
@@ -8,5 +9,5 @@ class Tool(ABC):
     name: str
 
     @abstractmethod
-    async def execute(self, **kwargs):
+    async def execute(self, **kwargs) -> Any:
         pass
