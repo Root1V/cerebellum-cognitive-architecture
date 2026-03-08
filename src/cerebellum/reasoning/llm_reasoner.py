@@ -10,17 +10,22 @@ class LLMReasoner(Reasoner):
     def __init__(self, llm_client=None):
         self.llm = llm_client
 
-    async def reason(self, context):
+    async def reason(self, context: dict):
         return await self.solve(context, {}, {})
 
-    async def execute(self, plan: list[dict], memory: Memory, tools: dict[str, Tool]):
+    async def execute(
+        self,
+        plan: list[dict],
+        memory: dict[str, Memory],
+        tools: dict[str, Tool],
+    ) -> list:
         results = []
         for step in plan:
             result = await self.solve(step, memory, tools)
             results.append(result)
         return results
 
-    async def solve(self, step: dict, memory: Memory, tools: dict[str, Tool]):
+    async def solve(self, step: dict, memory: dict[str, Memory], tools: dict[str, Tool]):
         # Support both plan formats:
         #   new: {"action": "search_market_data", ...}
         #   legacy: {"step": "search_market_data", ...}

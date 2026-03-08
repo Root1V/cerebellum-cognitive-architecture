@@ -1,5 +1,4 @@
 from ..core.controller import CognitiveController
-from ..core.perception import Perception
 
 
 class SimpleController(CognitiveController):
@@ -8,15 +7,15 @@ class SimpleController(CognitiveController):
     evalúa si fue satisfecho y no genera subgoals adicionales.
     """
 
-    async def interpret(self, perception: Perception) -> dict:
+    async def interpret(self, focused: dict) -> dict:
         """
-        Extrae el goal desde la percepción.
+        Extrae el goal desde la percepción filtrada.
         El planner se encargará de dividirlo en pasos concretos.
         """
         return {
-            "goal": perception.get("content", ""),
-            "intent": perception.get("intent", "analyze"),
-            "context": perception.get("context", {}),
+            "goal": focused.get("content", ""),
+            "intent": focused.get("intent", "analyze"),
+            "context": focused.get("context", {}),
         }
 
     async def is_goal_satisfied(self, goal: dict, result) -> bool:

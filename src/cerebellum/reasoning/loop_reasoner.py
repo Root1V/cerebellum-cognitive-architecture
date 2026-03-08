@@ -37,11 +37,16 @@ class LoopReasoner(Reasoner):
     # Interfaz pública de Reasoner
     # ------------------------------------------------------------------
 
-    async def reason(self, context):
+    async def reason(self, context: dict):
         """Punto de entrada simple: usa execute con memoria y tools vacíos."""
-        return await self.execute(context, {}, [])
+        return await self.execute(context, {}, {})
 
-    async def execute(self, goal, memory: Memory, tools: dict[str, Tool]):
+    async def execute(
+        self,
+        goal,
+        memory: dict[str, Memory],
+        tools: dict[str, Tool],
+    ) -> list:
         """
         Ejecuta el ciclo de razonamiento.
 

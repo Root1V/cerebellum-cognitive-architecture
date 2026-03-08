@@ -14,13 +14,13 @@ class MemoryStream(Memory):
 
     # --- Memory ABC ---
 
-    async def store(self, key, value) -> None:
+    async def store(self, key: str, value) -> None:
         self.memories.append({"key": key, "value": value})
 
-    async def retrieve(self, query) -> list:
+    async def retrieve(self, query: str) -> list:
         return [m for m in self.memories if query in str(m)]
 
-    async def update(self, item) -> None:
+    async def update(self, item: dict) -> None:
         self.memories.append(item)
 
     # --- Domain-specific API ---
@@ -28,8 +28,8 @@ class MemoryStream(Memory):
     async def add(self, event: dict) -> None:
         """Agrega un evento con timestamp al stream."""
         self.memories.append({
-            "timestamp": event["time"],
-            "data": event["data"]
+            "timestamp": event.get("time"),
+            "data": event.get("data"),
         })
 
     async def recent(self, n: int = 5) -> list:

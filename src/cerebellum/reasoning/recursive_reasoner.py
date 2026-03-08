@@ -28,7 +28,12 @@ class RecursiveReasoner(Reasoner):
         """Punto de entrada simple: resuelve context como problema raíz."""
         return await self.solve(context)
 
-    async def execute(self, plan: list[dict], memory: Memory, tools: dict[str, Tool]):
+    async def execute(
+        self,
+        plan: list[dict],
+        memory: dict[str, Memory],
+        tools: dict[str, Tool],
+    ) -> list:
         """
         Ejecuta cada paso del plan como un subproblema independiente.
         """
