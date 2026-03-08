@@ -22,9 +22,6 @@ class LLMReasoner(Reasoner):
     def __init__(self, llm_client=None):
         self.llm = llm_client
 
-    async def reason(self, context: dict):
-        return await self.solve(context, {}, {})
-
     async def execute(
         self,
         plan: list[dict],
@@ -38,25 +35,26 @@ class LLMReasoner(Reasoner):
         return results
 
     async def solve(self, step: dict, memory: dict[str, Memory], tools: dict[str, Tool]):
-        # Support both plan formats:
-        #   new: {"action": "search_market_data", ...}
-        #   legacy: {"step": "search_market_data", ...}
+        """
+        Ejecuta un paso del plan delegando al recurso adecuado.
+
+        Orden de delegación:
+          1. Tool registrada cuyo nombre coincide con el paso.
+          2. LLM, si está configurado.
+          3. Placeholder genérico (útil en tests / sin infraestructura real).
+        """
         action = step.get("action") or step.get("step")
 
-        if action == "search_market_data":
-            tool = tools.get("web_search")
-            if tool:
-                return await tool.execute(query="AI market Latin America")
-            return "Search results for AI market Latin America"
+        # 1. Delegar a tool registrada por nombre de paso
+        tool = tools.get(action) if isinstance(tools, dict) else None
+        if tool:
+            return await tool.execute()
 
-        if action == "analyze_trends":
-            if self.llm:
-                return await self.llm.complete(
-                    f"AI adoption growing in fintech and healthcare: {step}"
-                )
-            return "AI adoption growing in fintech and healthcare"
+        # 2. Delegar al LLM
+        if self.llm:
+            return await self.llm.complete(
+                f"Execute step '{action}'. Context: {step}"
+            )
 
-        if action == "generate_summary":
-            return "AI market in LATAM shows strong growth potential"
-
-        return f"unknown action: {action}"
+        # 3. Placeholder — sin tool ni LLM
+        return f"executed: {action}"

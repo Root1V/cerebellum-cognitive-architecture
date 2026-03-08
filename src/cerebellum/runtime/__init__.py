@@ -1,11 +1,11 @@
 """
-Runtime components: main cognitive system loop.
+Runtime components: main cognitive system loop and orchestration.
+
+Environment implementations live in cerebellum.environment.
 """
 
 from .cognitive_system import CognitiveSystem
-from .text_environment import TextEnvironment
 
 __all__ = [
     "CognitiveSystem",
-    "TextEnvironment",
 ]

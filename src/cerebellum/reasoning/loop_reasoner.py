@@ -1,14 +1,26 @@
 # reasoning/loop_reasoner.py
 #
-# ReasoningLoop: en lugar de ejecutar pasos secuencialmente desde un plan fijo,
-# itera sobre un ciclo   think → act → evaluate   hasta que el objetivo
-# se cumpla o se alcance el límite de iteraciones.
+# Implementa el patrón ReAct: Reason + Act en un loop.
 #
-# Diferencia clave con LLMReasoner / HierarchicalReasoner:
-#   Secuencial  → El plan se genera una sola vez y cada paso se ejecuta en orden.
-#   Loop        → En cada iteración el reasoner observa el estado actual
-#                 (historial, resultado previo) y decide cuál es el siguiente
-#                 paso, permitiendo corrección de curso y auto-evaluación.
+# Distinción clave respecto a otros componentes del sistema:
+#
+#   Action.execute()      → efecto AMBIENTAL: imprime, escribe, llama API externa.
+#                           Se ejecuta DESPUÉS del razonamiento en CognitiveSystem.
+#
+#   _invoke() aquí        → uso COGNITIVO de tools: recopila datos que alimentan
+#                           la siguiente decisión. El resultado de la iteración N
+#                           informa _think() en la iteración N+1. Sin esta
+#                           retroalimentación el loop perdería su razón de existir.
+#
+#   controller.is_goal_satisfied() → ¿debo reiniciar el ciclo cognitivo completo?
+#   _loop_satisfied()     → ¿debo continuar iterando dentro de esta sesión de
+#                           razonamiento? Concerns distintos, niveles distintos.
+#
+# Diferencia con LLMReasoner / HierarchicalReasoner:
+#   Secuencial → el plan se genera una sola vez y cada paso se ejecuta en orden.
+#   Loop (ReAct) → en cada iteración el reasoner observa el estado acumulado
+#                  (historial + resultado previo) y decide el siguiente paso,
+#                  permitiendo corrección de curso y auto-evaluación.
 
 from ..core.reasoning import Reasoner
 from ..core.memory import Memory
@@ -17,15 +29,19 @@ from ..core.tool import Tool
 
 class LoopReasoner(Reasoner):
     """
-    Reasoning loop (ciclo de razonamiento).
+    Reasoner que implementa el patrón ReAct (Reason + Act).
 
     Ciclo por iteración
     -------------------
-    1. _think  → decide el siguiente paso según el estado actual
-    2. _act    → ejecuta ese paso (tools, LLM, …)
-    3. _is_complete → evalúa si el objetivo ya fue alcanzado
+    1. _think()          → decide el siguiente paso observando el estado acumulado
+    2. _invoke()         → usa una tool cognitivamente para obtener datos
+    3. _loop_satisfied() → evalúa si este loop de razonamiento concluyó
 
-    Si se alcanza max_iterations antes de completar el objetivo,
+    Nota: _invoke() NO es Action.execute() — su propósito es recopilar
+    información que alimenta la próxima iteración de _think(), no producir
+    efectos ambientales. El efecto ambiental ocurre en CognitiveSystem paso 6.5.
+
+    Si se alcanza max_iterations antes de satisfacer el loop,
     devuelve el historial acumulado hasta ese momento.
     """
 
@@ -36,10 +52,6 @@ class LoopReasoner(Reasoner):
     # ------------------------------------------------------------------
     # Interfaz pública de Reasoner
     # ------------------------------------------------------------------
-
-    async def reason(self, context: dict):
-        """Punto de entrada simple: usa execute con memoria y tools vacíos."""
-        return await self.execute(context, {}, {})
 
     async def execute(
         self,
@@ -68,8 +80,8 @@ class LoopReasoner(Reasoner):
             # 1. Think — decidir el siguiente paso
             action = await self._think(state, memory, tools)
 
-            # 2. Act — ejecutar la acción elegida
-            result = await self._act(action, memory, tools)
+            # 2. Invoke — usar tool cognitivamente para obtener datos
+            result = await self._invoke(action, memory, tools)
 
             # Guardar en historial
             state["history"].append({
@@ -78,8 +90,8 @@ class LoopReasoner(Reasoner):
                 "result": result,
             })
 
-            # 3. Evaluate — ¿ya terminamos?
-            if await self._is_complete(state, result):
+            # 3. Loop satisfied — ¿terminamos esta sesión de razonamiento?
+            if await self._loop_satisfied(state, result, tools):
                 break
 
         return state["history"]
@@ -90,12 +102,16 @@ class LoopReasoner(Reasoner):
 
     async def _think(self, state: dict, memory: Memory, tools) -> dict | str:
         """
-        Decide el siguiente paso basándose en el plan del planner y el historial.
+        Decide el siguiente paso consumiendo el plan del Planner en orden.
 
-        Si state["goal"] es una lista (plan estructurado del Planner), consume sus
-        pasos en orden. Si es un dict/str (goal directo), usa actions por defecto.
-        En una implementación con LLM real, aquí se construiría un prompt con el
-        goal + historial y se le pediría al modelo la siguiente acción.
+        El Planner es responsable de determinar QUÉ pasos ejecutar.
+        El Reasoner es responsable de ITERAR sobre ellos observando el
+        historial acumulado — eso es lo que diferencia ReAct de ejecución
+        secuencial simple.
+
+        En una implementación con LLM real, aquí se construiría un prompt
+        con goal + historial para que el modelo decida el siguiente paso,
+        en lugar de consumir el plan linealmente.
         """
         completed_actions = [
             h["action"].get("step") if isinstance(h["action"], dict) else h["action"]
@@ -105,61 +121,57 @@ class LoopReasoner(Reasoner):
         plan = state["goal"]
 
         if isinstance(plan, list):
-            # Consume los pasos del plan en orden
             for plan_step in plan:
                 action_name = plan_step.get("action") or plan_step.get("step")
                 if action_name not in completed_actions:
                     return {"step": action_name, "meta": plan_step}
-            return "done"
 
-        # Fallback: sin plan estructurado, usar acciones por defecto
-        available_actions = [
-            "search_market_data",
-            "analyze_trends",
-            "generate_summary",
-        ]
-        remaining = [a for a in available_actions if a not in completed_actions]
-        return {"step": remaining[0]} if remaining else "done"
+        # Plan agotado o no estructurado — el loop termina
+        return "done"
 
-    async def _act(self, action: dict | str, memory: Memory, tools) -> str | None:
+    async def _invoke(self, action: dict | str, memory: Memory, tools) -> str | None:
         """
-        Ejecuta la acción elegida por _think.
+        Uso COGNITIVO de tools: recopila datos que alimentan la próxima iteración.
 
-        tools puede ser un dict {nombre: Tool} o una lista.
+        Esto NO es Action.execute(). No produce efectos ambientales.
+        El resultado se almacena en el historial y alimenta _think() en N+1.
+
+        Orden de delegación:
+          1. Tool registrada cuyo nombre coincide con el paso.
+          2. LLM, si está configurado — genera una observación sobre el paso.
+          3. Placeholder genérico (útil en tests / sin infraestructura real).
         """
         if action == "done" or not isinstance(action, dict):
             return None
 
         step = action.get("step")
+        meta = action.get("meta", {})
 
-        if step == "search_market_data":
-            tool = tools.get("web_search") if isinstance(tools, dict) else None
-            if tool:
-                return await tool.execute(query="AI market Latin America")
-            return "Search results for AI market Latin America"
+        # 1. Delegar a tool registrada
+        tool = tools.get(step) if isinstance(tools, dict) else None
+        if tool:
+            return await tool.execute()
 
-        if step == "analyze_trends":
-            if self.llm:
-                return await self.llm.complete(
-                    f"Analyze AI adoption trends. Context: {action}"
-                )
-            return "AI adoption growing in fintech and healthcare"
+        # 2. Delegar al LLM
+        if self.llm:
+            return await self.llm.complete(
+                f"Execute step '{step}'. Context: {meta}"
+            )
 
-        if step == "generate_summary":
-            return "AI market in LATAM shows strong growth potential"
+        # 3. Placeholder — sin tool ni LLM (suficiente para tests unitarios)
+        return f"executed: {step}"
 
-        return f"unknown action: {step}"
-
-    async def _is_complete(self, state: dict, last_result) -> bool:
+    async def _loop_satisfied(self, state: dict, last_result, tools) -> bool:
         """
-        Condición de parada del loop.
+        Condición de parada del loop de razonamiento (ReAct interno).
 
-        El objetivo se considera alcanzado cuando:
-        - last_result es None (la acción fue 'done'), o
-        - todos los pasos del plan fueron completados.
+        Responde: ¿debo continuar iterando dentro de esta sesión?
+        NO es controller.is_goal_satisfied(), que responde: ¿debo reiniciar
+        el ciclo cognitivo completo? Ambos existen en niveles distintos.
 
-        La lógica es general: no depende de nombres de acción específicos,
-        sino de que el historial cubra todos los pasos del plan actual.
+        El loop se considera satisfecho cuando:
+        - last_result es None (_think() señaló "done" → _invoke() devolvió None), o
+        - todos los pasos del plan fueron completados (segundo chequeo de seguridad).
         """
         if last_result is None:
             return True
@@ -174,5 +186,4 @@ class LoopReasoner(Reasoner):
             plan_steps = {step.get("action") or step.get("step") for step in plan}
             return plan_steps.issubset(completed)
 
-        # Fallback sin plan estructurado: completo cuando todos los defaults terminaron
-        return {"search_market_data", "analyze_trends", "generate_summary"}.issubset(completed)
+        return True

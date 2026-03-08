@@ -14,7 +14,6 @@
 # HierarchicalReasoner
 
 from abc import ABC, abstractmethod
-from typing import Any
 
 from .memory import Memory
 from .tool import Tool
@@ -37,12 +36,5 @@ class Reasoner(ABC):
         plan   : list of step dicts produced by the Planner.
         memory : memory system dict keyed by memory type.
         tools  : available tools keyed by name.
-        """
-        ...
-
-    @abstractmethod
-    async def reason(self, context: dict) -> Any:
-        """
-        Perform reasoning over context.
         """
         ...

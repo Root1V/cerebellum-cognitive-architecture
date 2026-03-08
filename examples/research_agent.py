@@ -42,12 +42,18 @@ from cerebellum.planners import SimplePlanner
 
 from cerebellum.reasoning import LoopReasoner
 
-from cerebellum.runtime import TextEnvironment
+from cerebellum.environment import TextEnvironment
 from cerebellum.tools import WebSearchTool
 from cerebellum.tools import DatabaseTool
 
 from cerebellum.observability import Tracer
 from cerebellum.observability import Metrics
+
+
+TASK = "Analyze the AI market in Latin America"
+# The environment represents the world/domain context the agent operates in,
+# not the task itself. The task is what the agent is asked to do.
+ENVIRONMENT_CONTEXT = "Domain: Latin American technology market. Year: 2026. Focus areas: AI, fintech, healthcare."
 
 
 async def main():
@@ -97,7 +103,7 @@ async def main():
     # Planner
     # -----------------------------
 
-    planner = SimplePlanner()
+    planner = SimplePlanner(tools=tools)
 
     # -----------------------------
     # Reasoning Engine
@@ -118,7 +124,7 @@ async def main():
     attention = SimpleAttention()
     action = ConsoleAction()
     learning = SimpleLearning()
-    environment = TextEnvironment("What is the capital of Peru?")
+    environment = TextEnvironment(ENVIRONMENT_CONTEXT)
     
     system = CognitiveSystem(
         perception=perception,
@@ -128,7 +134,11 @@ async def main():
         reasoner=reasoner,
         action=action,
         learning=learning,
-        environment=environment
+        environment=environment,
+        controller=controller,
+        tools=tools,
+        tracer=tracer,
+        metrics=metrics,
     )
 
     # -----------------------------
@@ -137,9 +147,7 @@ async def main():
 
     agent = CognitiveAgent(system)
 
-    result = await agent.run(
-        "Analyze the AI market in Latin America"
-    )
+    result = await agent.run(TASK)
 
     print("\nFINAL RESULT\n")
     print(result)
@@ -149,11 +157,13 @@ asyncio.run(main())
 
 
 # [TRACE] input_received: Analyze the AI market in Latin America
+# [ACTION] {'iteration': 1, 'action': {'step': 'search_market_data', 'meta': {'step': 1, 'action': 'search_market_data', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'Search results for AI market Latin America'}
+# [ACTION] {'iteration': 2, 'action': {'step': 'analyze_trends', 'meta': {'step': 2, 'action': 'analyze_trends', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'AI adoption growing in fintech and healthcare'}
+# [ACTION] {'iteration': 3, 'action': {'step': 'generate_summary', 'meta': {'step': 3, 'action': 'generate_summary', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'AI market in LATAM shows strong growth potential'}
+# Environment received: [{'iteration': 1, 'action': {'step': 'search_market_data', 'meta': {'step': 1, 'action': 'search_market_data', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'Search results for AI market Latin America'}, {'iteration': 2, 'action': {'step': 'analyze_trends', 'meta': {'step': 2, 'action': 'analyze_trends', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'AI adoption growing in fintech and healthcare'}, {'iteration': 3, 'action': {'step': 'generate_summary', 'meta': {'step': 3, 'action': 'generate_summary', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'AI market in LATAM shows strong growth potential'}]
+# [TRACE] action_executed: [{'iteration': 1, 'action': {'step': 'search_market_data', 'meta': {'step': 1, 'action': 'search_market_data', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'Search results for AI market Latin America'}, {'iteration': 2, 'action': {'step': 'analyze_trends', 'meta': {'step': 2, 'action': 'analyze_trends', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'AI adoption growing in fintech and healthcare'}, {'iteration': 3, 'action': {'step': 'generate_summary', 'meta': {'step': 3, 'action': 'generate_summary', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'AI market in LATAM shows strong growth potential'}]
 
 # FINAL RESULT
 
-# [
-#  'Search results for AI market Latin America',
-#  'AI adoption growing in fintech and healthcare',
-#  'AI market in LATAM shows strong growth potential'
-# ]
+# [{'iteration': 1, 'action': {'step': 'search_market_data', 'meta': {'step': 1, 'action': 'search_market_data', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'Search results for AI market Latin America'}, {'iteration': 2, 'action': {'step': 'analyze_trends', 'meta': {'step': 2, 'action': 'analyze_trends', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'AI adoption growing in fintech and healthcare'}, {'iteration': 3, 'action': {'step': 'generate_summary', 'meta': {'step': 3, 'action': 'generate_summary', 'goal': {'goal': 'Analyze the AI market in Latin America', 'intent': 'analyze', 'context': {}}}}, 'result': 'AI market in LATAM shows strong growth potential'}]
+

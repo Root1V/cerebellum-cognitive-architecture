@@ -24,10 +24,6 @@ class RecursiveReasoner(Reasoner):
     # Interfaz pública de Reasoner
     # ------------------------------------------------------------------
 
-    async def reason(self, context):
-        """Punto de entrada simple: resuelve context como problema raíz."""
-        return await self.solve(context)
-
     async def execute(
         self,
         plan: list[dict],
