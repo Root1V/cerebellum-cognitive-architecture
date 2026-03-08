@@ -53,8 +53,13 @@ class CognitiveSystem:
         if self.tracer:
             self.tracer.trace("input_received", input_data)
 
+        # 0. Environment observation — world state enriches the cognitive cycle
+        env_state = self.environment.observe()
+
         # 1. Perception
         perception = await self.perception.perceive(input_data)
+        # Merge environment state so attention has access to the full world context
+        perception["env"] = env_state
 
         # 2. Attention — filter what is relevant from perception + memory
         focused = await self.attention.select(perception, self.memory)

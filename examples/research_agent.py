@@ -51,6 +51,9 @@ from cerebellum.observability import Metrics
 
 
 TASK = "Analyze the AI market in Latin America"
+# The environment represents the world/domain context the agent operates in,
+# not the task itself. The task is what the agent is asked to do.
+ENVIRONMENT_CONTEXT = "Domain: Latin American technology market. Year: 2026. Focus areas: AI, fintech, healthcare."
 
 
 async def main():
@@ -121,7 +124,7 @@ async def main():
     attention = SimpleAttention()
     action = ConsoleAction()
     learning = SimpleLearning()
-    environment = TextEnvironment(TASK)
+    environment = TextEnvironment(ENVIRONMENT_CONTEXT)
     
     system = CognitiveSystem(
         perception=perception,
