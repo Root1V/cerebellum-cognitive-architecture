@@ -1,5 +1,7 @@
 # reasoning/llm_reasoner.py
 
+from pydantic import BaseModel
+
 from ..core.reasoning import Reasoner
 from ..core.memory import Memory
 from ..core.tool import Tool
@@ -11,15 +13,23 @@ class LLMReasoner(Reasoner):
     Reasoner basado en LLM.
 
     El llm_client debe implementar el contrato LLMClient (core/llm.py):
-        async think(prompt, context) -> str
+        async think(prompt, context, output_model) -> str | BaseModel
+
+    output_model (opcional): clase Pydantic que define la estructura del resultado
+    de razonamiento. Si se pasa, cada paso retorna una instancia validada.
 
     Ejemplo:
         from cerebellum.llm import LLMClient
-        reasoner = LLMReasoner(llm_client=LLMClient(model="Mixtral-7B..."))
+        reasoner = LLMReasoner(llm_client=LLMClient(model="Mixtral-7B..."), output_model=StepResult)
     """
 
-    def __init__(self, llm_client: LLMClient | None = None):
+    def __init__(
+        self,
+        llm_client: LLMClient | None = None,
+        output_model: type[BaseModel] | None = None,
+    ):
         self.llm = llm_client
+        self.output_model = output_model
 
     async def execute(
         self,
@@ -54,6 +64,7 @@ class LLMReasoner(Reasoner):
             return await self.llm.think(
                 prompt=f"Execute step '{action}'. Step data: {step}",
                 context="You are a reasoning assistant. Execute the requested step and return the result.",
+                output_model=self.output_model,
             )
 
         # 3. Placeholder — sin tool ni LLM

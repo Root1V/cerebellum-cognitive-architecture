@@ -1,11 +1,14 @@
 """
 LLMClient: implementación del LLM local usando axonium SDK.
 
-Wrappea únicamente axonium.LlamaAdapter.async_chat — el único método
-necesario en este proyecto porque permite enviar contexto completo
-a través de mensajes estructurados.
+Wrappea únicamente axonium.LlamaAdapter.async_chat. Soporta structured output
+mediante Pydantic: si se pasa output_model, el adapter inyecta el schema en el
+prompt, pide JSON al LLM y valida la respuesta con Pydantic antes de retornarla.
 """
+import json
 import logging
+
+from pydantic import BaseModel
 
 from ..core.llm import LLMClient as LLMClientBase
 
@@ -16,15 +19,27 @@ class LLMClient(LLMClientBase):
     """
     Cliente LLM local basado en axonium SDK.
 
-    Compatible con LLMPlanner, LLMReasoner y LoopReasoner a través
-    del contrato LLMClient definido en core/llm.py.
-
-    Ejemplo:
+    Ejemplo sin structured output:
         llm = LLMClient(model="Mixtral-7B-Instruct-v0.1.Q4_0.gguf")
-        response = await llm.think(
+        text = await llm.think(
             prompt="Analiza el mercado de IA en LATAM.",
-            context="Eres un asistente de planificación estratégica.",
+            context="Eres un asistente de planificación.",
         )
+
+    Ejemplo con structured output:
+        class PlanStep(BaseModel):
+            action: str
+            goal: str
+
+        class Plan(BaseModel):
+            steps: list[PlanStep]
+
+        plan = await llm.think(
+            prompt="Break this goal into steps: ...",
+            context="You are a planning assistant.",
+            output_model=Plan,
+        )
+        # plan es una instancia validada de Plan
     """
 
     def __init__(
@@ -50,20 +65,42 @@ class LLMClient(LLMClientBase):
         )
         logger.info("LLMClient inicializado con modelo=%s", model)
 
-    async def think(self, prompt: str, context: str | None = None, **kwargs) -> str:
+    async def think(
+        self,
+        prompt: str,
+        context: str | None = None,
+        output_model: type[BaseModel] | None = None,
+        **kwargs,
+    ) -> str | BaseModel:
         """
-        Construye el array de mensajes a partir de prompt y context,
-        y llama al SDK de axonium.
+        Construye los mensajes, aplica structured output si se pasa output_model,
+        llama al SDK y retorna el resultado validado o el string crudo.
 
-        Parameters
-        ----------
-        prompt  : instrucción o pregunta concreta
-        context : información de fondo (system role). None omite el mensaje system.
+        Si output_model está presente:
+          - Añade el JSON schema al system prompt para guiar al LLM local.
+          - Solicita response_format json_object al SDK.
+          - Valida y retorna una instancia Pydantic.
         """
+        system_content = context or ""
+
+        if output_model is not None:
+            schema_hint = json.dumps(output_model.model_json_schema(), indent=2)
+            system_content = (
+                f"{system_content}\n\n"
+                f"Respond ONLY with a valid JSON object that matches this schema:\n"
+                f"{schema_hint}"
+            ).strip()
+            kwargs["response_format"] = {"type": "json_object"}
+
         messages: list[dict[str, str]] = []
-        if context:
-            messages.append({"role": "system", "content": context})
+        if system_content:
+            messages.append({"role": "system", "content": system_content})
         messages.append({"role": "user", "content": prompt})
 
         response = await self._adapter.async_chat(messages=messages, **kwargs)
-        return response.choices[0].message.content
+        raw = response.choices[0].message.content
+
+        if output_model is not None:
+            return output_model.model_validate_json(raw)
+
+        return raw
