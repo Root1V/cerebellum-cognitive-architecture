@@ -11,7 +11,7 @@ class LLMReasoner(Reasoner):
     Reasoner basado en LLM.
 
     El llm_client debe implementar el contrato LLMClient (core/llm.py):
-        async async_chat(messages: list[dict]) -> str
+        async think(prompt, context) -> str
 
     Ejemplo:
         from cerebellum.llm import LLMClient
@@ -51,11 +51,10 @@ class LLMReasoner(Reasoner):
 
         # 2. Delegar al LLM
         if self.llm:
-            messages = [
-                {"role": "system", "content": "You are a reasoning assistant. Execute the requested step and return the result."},
-                {"role": "user",   "content": f"Execute step '{action}'. Context: {step}"},
-            ]
-            return await self.llm.async_chat(messages)
+            return await self.llm.think(
+                prompt=f"Execute step '{action}'. Step data: {step}",
+                context="You are a reasoning assistant. Execute the requested step and return the result.",
+            )
 
         # 3. Placeholder — sin tool ni LLM
         return f"executed: {action}"

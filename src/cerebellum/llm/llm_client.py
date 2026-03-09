@@ -21,10 +21,10 @@ class LLMClient(LLMClientBase):
 
     Ejemplo:
         llm = LLMClient(model="Mixtral-7B-Instruct-v0.1.Q4_0.gguf")
-        response = await llm.async_chat([
-            {"role": "system", "content": "Eres un asistente de planificación."},
-            {"role": "user",   "content": "Analiza el mercado de IA en LATAM."},
-        ])
+        response = await llm.think(
+            prompt="Analiza el mercado de IA en LATAM.",
+            context="Eres un asistente de planificación estratégica.",
+        )
     """
 
     def __init__(
@@ -50,13 +50,20 @@ class LLMClient(LLMClientBase):
         )
         logger.info("LLMClient inicializado con modelo=%s", model)
 
-    async def async_chat(self, messages: list[dict[str, str]], **kwargs) -> str:
+    async def think(self, prompt: str, context: str | None = None, **kwargs) -> str:
         """
-        Envía mensajes al LLM local y retorna la respuesta como texto.
+        Construye el array de mensajes a partir de prompt y context,
+        y llama al SDK de axonium.
 
         Parameters
         ----------
-        messages : lista de mensajes {"role": ..., "content": ...}
+        prompt  : instrucción o pregunta concreta
+        context : información de fondo (system role). None omite el mensaje system.
         """
+        messages: list[dict[str, str]] = []
+        if context:
+            messages.append({"role": "system", "content": context})
+        messages.append({"role": "user", "content": prompt})
+
         response = await self._adapter.async_chat(messages=messages, **kwargs)
         return response.choices[0].message.content

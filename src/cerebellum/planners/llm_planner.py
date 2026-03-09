@@ -9,7 +9,7 @@ class LLMPlanner(Planner):
     LLM-based planner. Falls back to a default plan when no client is provided.
 
     El llm_client debe implementar el contrato LLMClient (core/llm.py):
-        async async_chat(messages: list[dict]) -> str
+        async think(prompt, context) -> str
 
     Ejemplo:
         from cerebellum.llm import LLMClient
@@ -21,11 +21,10 @@ class LLMPlanner(Planner):
 
     async def create_plan(self, goal, context=None):
         if self.llm is not None:
-            messages = [
-                {"role": "system", "content": "You are a planning assistant. Break goals into clear ordered steps."},
-                {"role": "user",   "content": f"Break this goal into ordered steps: {goal}"},
-            ]
-            return await self.llm.async_chat(messages)
+            return await self.llm.think(
+                prompt=f"Break this goal into ordered steps: {goal}",
+                context="You are a planning assistant. Break goals into clear ordered steps.",
+            )
 
         # Default plan when no LLM client is configured
         return [

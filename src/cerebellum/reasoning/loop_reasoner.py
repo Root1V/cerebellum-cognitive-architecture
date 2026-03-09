@@ -155,11 +155,10 @@ class LoopReasoner(Reasoner):
 
         # 2. Delegar al LLM
         if self.llm:
-            messages = [
-                {"role": "system", "content": "You are a reasoning assistant operating in a ReAct loop. Execute the step and return an observation."},
-                {"role": "user",   "content": f"Execute step '{step}'. Context: {meta}"},
-            ]
-            return await self.llm.async_chat(messages)
+            return await self.llm.think(
+                prompt=f"Execute step '{step}'. Step data: {meta}",
+                context="You are a reasoning assistant operating in a ReAct loop. Execute the step and return an observation.",
+            )
 
         # 3. Placeholder — sin tool ni LLM (suficiente para tests unitarios)
         return f"executed: {step}"
