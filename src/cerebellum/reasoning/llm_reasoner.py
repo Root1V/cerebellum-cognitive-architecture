@@ -3,38 +3,38 @@
 from ..core.reasoning import Reasoner
 from ..core.memory import Memory
 from ..core.tool import Tool
+from ..core.llm import LLMClient
+from ..planners import Plan, PlanStep
 
 
 class LLMReasoner(Reasoner):
     """
-    Reasoner basado en LLM.
+    Reasoner basado en LLM. Consume un Plan estructurado del Planner.
 
-    El llm_client debe implementar:
-        async complete(prompt: str) -> str
-
-    Compatible con cerebellum.llm.LlamaAdapter (axonium-sdk).
+    El llm_client debe implementar el contrato LLMClient (core/llm.py):
+        async think(prompt, context, output_model) -> str | BaseModel
 
     Ejemplo:
-        from cerebellum.llm import LlamaAdapter
-        reasoner = LLMReasoner(llm_client=LlamaAdapter(model="Mixtral-7B..."))
+        from cerebellum.llm import LLMClient
+        reasoner = LLMReasoner(llm_client=LLMClient(model="Mixtral-7B..."))
     """
 
-    def __init__(self, llm_client=None):
+    def __init__(self, llm_client: LLMClient | None = None):
         self.llm = llm_client
 
     async def execute(
         self,
-        plan: list[dict],
+        plan: Plan,
         memory: dict[str, Memory],
         tools: dict[str, Tool],
     ) -> list:
         results = []
-        for step in plan:
+        for step in plan.steps:
             result = await self.solve(step, memory, tools)
             results.append(result)
         return results
 
-    async def solve(self, step: dict, memory: dict[str, Memory], tools: dict[str, Tool]):
+    async def solve(self, step: PlanStep, memory: dict[str, Memory], tools: dict[str, Tool]):
         """
         Ejecuta un paso del plan delegando al recurso adecuado.
 
@@ -43,7 +43,7 @@ class LLMReasoner(Reasoner):
           2. LLM, si está configurado.
           3. Placeholder genérico (útil en tests / sin infraestructura real).
         """
-        action = step.get("action") or step.get("step")
+        action = step.action
 
         # 1. Delegar a tool registrada por nombre de paso
         tool = tools.get(action) if isinstance(tools, dict) else None
@@ -52,8 +52,9 @@ class LLMReasoner(Reasoner):
 
         # 2. Delegar al LLM
         if self.llm:
-            return await self.llm.complete(
-                f"Execute step '{action}'. Context: {step}"
+            return await self.llm.think(
+                prompt=f"Execute step '{action}'. Goal: {step.goal}",
+                context="You are a reasoning assistant. Execute the requested step and return the result.",
             )
 
         # 3. Placeholder — sin tool ni LLM

@@ -3,6 +3,7 @@ from ..core.reasoning import Reasoner
 from ..core.planner import Planner
 from ..core.memory import Memory
 from ..core.tool import Tool
+from ..planners import Plan
 
 
 class HierarchicalReasoner(Reasoner):
@@ -22,10 +23,10 @@ class HierarchicalReasoner(Reasoner):
         if "episodic" in memory:
             context = await memory["episodic"].recall(str(goal))
 
-        plan = await self.planner.create_plan(goal, context)
+        plan: Plan = await self.planner.create_plan(goal, context)
         results = []
 
-        for step in plan:
+        for step in plan.steps:
             result = await self.worker.solve(
                 step,
                 memory,

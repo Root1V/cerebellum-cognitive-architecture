@@ -1,6 +1,6 @@
 """
-LLM adapters for cerebellum-architecture.
+LLM clients for cerebellum-architecture.
 """
-from .llama_adapter import LlamaAdapter
+from .llm_client import LLMClient
 
-__all__ = ["LlamaAdapter"]
+__all__ = ["LLMClient"]

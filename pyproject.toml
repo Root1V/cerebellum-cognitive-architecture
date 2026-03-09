@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "axonium>=0.6.0",
+    # pydantic is available through axonium's transitive dependencies
 ]
 
 [project.optional-dependencies]
