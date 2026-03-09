@@ -8,6 +8,7 @@ prompt, pide JSON al LLM y valida la respuesta con Pydantic antes de retornarla.
 import json
 import logging
 
+from axonium import LlamaAdapter
 from pydantic import BaseModel
 
 from ..core.llm import LLMClient as LLMClientBase
@@ -49,14 +50,6 @@ class LLMClient(LLMClientBase):
         timeout: float = 60.0,
         **kwargs,
     ):
-        try:
-            from axonium import LlamaAdapter
-        except ImportError as exc:
-            raise ImportError(
-                "El paquete 'axonium' no está instalado. "
-                "Instálalo con: uv add axonium"
-            ) from exc
-
         self._adapter = LlamaAdapter(
             model=model,
             base_url=base_url,
