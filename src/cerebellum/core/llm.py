@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from pydantic import BaseModel
+from pydantic import BaseModel
 
 
 class LLMClient(ABC):
@@ -23,9 +21,9 @@ class LLMClient(ABC):
         self,
         prompt: str,
         context: str | None = None,
-        output_model: type["BaseModel"] | None = None,
+        output_model: type[BaseModel] | None = None,
         **kwargs,
-    ) -> "str | BaseModel":
+    ) -> str | BaseModel:
         """
         Invoca el LLM con un prompt, contexto opcional y schema de salida opcional.
 
