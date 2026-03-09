@@ -6,6 +6,7 @@
 from ..core.reasoning import Reasoner
 from ..core.memory import Memory
 from ..core.tool import Tool
+from ..planners import Plan, PlanStep
 
 
 class RecursiveReasoner(Reasoner):
@@ -26,7 +27,7 @@ class RecursiveReasoner(Reasoner):
 
     async def execute(
         self,
-        plan: list[dict],
+        plan: Plan,
         memory: dict[str, Memory],
         tools: dict[str, Tool],
     ) -> list:
@@ -34,7 +35,7 @@ class RecursiveReasoner(Reasoner):
         Ejecuta cada paso del plan como un subproblema independiente.
         """
         results = []
-        for step in plan:
+        for step in plan.steps:
             result = await self.solve(step)
             results.append(result)
         return results

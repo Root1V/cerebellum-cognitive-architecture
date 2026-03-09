@@ -26,6 +26,7 @@ from ..core.reasoning import Reasoner
 from ..core.memory import Memory
 from ..core.tool import Tool
 from ..core.llm import LLMClient
+from ..planners import Plan
 
 
 class LoopReasoner(Reasoner):
@@ -121,11 +122,10 @@ class LoopReasoner(Reasoner):
 
         plan = state["goal"]
 
-        if isinstance(plan, list):
-            for plan_step in plan:
-                action_name = plan_step.get("action") or plan_step.get("step")
-                if action_name not in completed_actions:
-                    return {"step": action_name, "meta": plan_step}
+        if isinstance(plan, Plan):
+            for plan_step in plan.steps:
+                if plan_step.action not in completed_actions:
+                    return {"step": plan_step.action, "meta": plan_step}
 
         # Plan agotado o no estructurado — el loop termina
         return "done"
@@ -184,8 +184,8 @@ class LoopReasoner(Reasoner):
         }
 
         plan = state["goal"]
-        if isinstance(plan, list):
-            plan_steps = {step.get("action") or step.get("step") for step in plan}
+        if isinstance(plan, Plan):
+            plan_steps = {step.action for step in plan.steps}
             return plan_steps.issubset(completed)
 
         return True
