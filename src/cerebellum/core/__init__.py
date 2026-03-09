@@ -8,6 +8,7 @@ from .attention import Attention
 from .controller import CognitiveController
 from .environment import Environment
 from .learning import Experience, Learning
+from .llm import LLMClient
 from .memory import Memory
 from .perception import Perception
 from .planner import Planner
@@ -22,6 +23,7 @@ __all__ = [
     "Environment",
     "Experience",
     "Learning",
+    "LLMClient",
     "Memory",
     "Perception",
     "Planner",

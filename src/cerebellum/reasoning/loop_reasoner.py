@@ -25,6 +25,7 @@
 from ..core.reasoning import Reasoner
 from ..core.memory import Memory
 from ..core.tool import Tool
+from ..core.llm import LLMClient
 
 
 class LoopReasoner(Reasoner):
@@ -45,7 +46,7 @@ class LoopReasoner(Reasoner):
     devuelve el historial acumulado hasta ese momento.
     """
 
-    def __init__(self, llm_client=None, max_iterations: int = 10):
+    def __init__(self, llm_client: LLMClient | None = None, max_iterations: int = 10):
         self.llm = llm_client
         self.max_iterations = max_iterations
 
@@ -154,9 +155,11 @@ class LoopReasoner(Reasoner):
 
         # 2. Delegar al LLM
         if self.llm:
-            return await self.llm.complete(
-                f"Execute step '{step}'. Context: {meta}"
-            )
+            messages = [
+                {"role": "system", "content": "You are a reasoning assistant operating in a ReAct loop. Execute the step and return an observation."},
+                {"role": "user",   "content": f"Execute step '{step}'. Context: {meta}"},
+            ]
+            return await self.llm.async_chat(messages)
 
         # 3. Placeholder — sin tool ni LLM (suficiente para tests unitarios)
         return f"executed: {step}"

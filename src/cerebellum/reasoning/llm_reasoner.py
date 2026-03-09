@@ -3,23 +3,22 @@
 from ..core.reasoning import Reasoner
 from ..core.memory import Memory
 from ..core.tool import Tool
+from ..core.llm import LLMClient
 
 
 class LLMReasoner(Reasoner):
     """
     Reasoner basado en LLM.
 
-    El llm_client debe implementar:
-        async complete(prompt: str) -> str
-
-    Compatible con cerebellum.llm.LlamaAdapter (axonium-sdk).
+    El llm_client debe implementar el contrato LLMClient (core/llm.py):
+        async async_chat(messages: list[dict]) -> str
 
     Ejemplo:
-        from cerebellum.llm import LlamaAdapter
-        reasoner = LLMReasoner(llm_client=LlamaAdapter(model="Mixtral-7B..."))
+        from cerebellum.llm import LLMClient
+        reasoner = LLMReasoner(llm_client=LLMClient(model="Mixtral-7B..."))
     """
 
-    def __init__(self, llm_client=None):
+    def __init__(self, llm_client: LLMClient | None = None):
         self.llm = llm_client
 
     async def execute(
@@ -52,9 +51,11 @@ class LLMReasoner(Reasoner):
 
         # 2. Delegar al LLM
         if self.llm:
-            return await self.llm.complete(
-                f"Execute step '{action}'. Context: {step}"
-            )
+            messages = [
+                {"role": "system", "content": "You are a reasoning assistant. Execute the requested step and return the result."},
+                {"role": "user",   "content": f"Execute step '{action}'. Context: {step}"},
+            ]
+            return await self.llm.async_chat(messages)
 
         # 3. Placeholder — sin tool ni LLM
         return f"executed: {action}"

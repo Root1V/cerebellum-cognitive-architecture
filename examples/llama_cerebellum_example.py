@@ -9,17 +9,20 @@ Variables de entorno requeridas (archivo .env):
     LLM_PASSWORD=tu_contraseña
 """
 import asyncio
-from cerebellum.llm import LlamaAdapter
+
+from dotenv import load_dotenv
+from cerebellum.llm import LLMClient
 from cerebellum.planners import LLMPlanner
 from cerebellum.reasoning import LLMReasoner
 
+load_dotenv()
+
 
 async def main():
-    # 1. Crear el adapter LLM local usando axonium
-    llm = LlamaAdapter(
+    # 1. Crear el cliente LLM local usando axonium
+    llm = LLMClient(
         model="Mixtral-7B-Instruct-v0.1.Q4_0.gguf",
         timeout=60.0,
-        system_prompt="Eres un asistente de planificación estratégica.",
     )
 
     # 2. Planner LLM: genera un plan a partir del goal

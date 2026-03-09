@@ -1,31 +1,31 @@
 # planners/llm_planner.py
 
 from ..core.planner import Planner
+from ..core.llm import LLMClient
 
 
 class LLMPlanner(Planner):
     """
     LLM-based planner. Falls back to a default plan when no client is provided.
 
-    El llm_client debe implementar:
-        async complete(prompt: str) -> str
-
-    Compatible con cerebellum.llm.LlamaAdapter (axonium-sdk).
+    El llm_client debe implementar el contrato LLMClient (core/llm.py):
+        async async_chat(messages: list[dict]) -> str
 
     Ejemplo:
-        from cerebellum.llm import LlamaAdapter
-        planner = LLMPlanner(llm_client=LlamaAdapter(model="Mixtral-7B..."))
+        from cerebellum.llm import LLMClient
+        planner = LLMPlanner(llm_client=LLMClient(model="Mixtral-7B..."))
     """
 
-    def __init__(self, llm_client=None):
+    def __init__(self, llm_client: LLMClient | None = None):
         self.llm = llm_client
 
     async def create_plan(self, goal, context=None):
         if self.llm is not None:
-            response = await self.llm.complete(
-                f"Break this goal into ordered steps: {goal}"
-            )
-            return response
+            messages = [
+                {"role": "system", "content": "You are a planning assistant. Break goals into clear ordered steps."},
+                {"role": "user",   "content": f"Break this goal into ordered steps: {goal}"},
+            ]
+            return await self.llm.async_chat(messages)
 
         # Default plan when no LLM client is configured
         return [
