@@ -12,11 +12,13 @@
 
 from abc import ABC, abstractmethod
 
+from cerebellum.cognition.core.models import Plan
+
 
 class Planner(ABC):
 
     @abstractmethod
-    async def create_plan(self, goal: dict, context: list | None = None) -> list[dict]:
+    async def create_plan(self, goal: dict, context: list | None = None) -> Plan:
         """
         Decompose goal into tasks.
         """

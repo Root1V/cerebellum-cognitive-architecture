@@ -16,7 +16,7 @@
 from abc import ABC, abstractmethod
 
 from .memory import Memory
-from .tool import Tool
+from ...tools.tool import Tool
 
 
 class Reasoner(ABC):

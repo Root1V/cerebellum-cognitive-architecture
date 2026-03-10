@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from pydantic import BaseModel
 
 
-class LLMClient(ABC):
+class LLM(ABC):
     """
     Contrato base para un cliente LLM en cerebellum.
 
@@ -35,3 +35,7 @@ class LLMClient(ABC):
         output_model : clase Pydantic que define la estructura esperada del output.
                        None retorna el string crudo del LLM.
         """
+
+
+# Backward-compatible alias
+LLMClient = LLM

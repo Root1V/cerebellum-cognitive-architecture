@@ -15,9 +15,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-from cerebellum.llm import LLMClient
-from cerebellum.planners import LLMPlanner
-from cerebellum.reasoning import LLMReasoner
+from cerebellum.infraestructure import LLMClient
+from cerebellum.cognition import LLMPlanner
+from cerebellum.cognition import LLMReasoner
 
 
 

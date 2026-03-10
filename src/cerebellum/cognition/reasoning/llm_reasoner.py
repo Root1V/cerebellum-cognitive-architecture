@@ -2,8 +2,8 @@
 
 from ..core.reasoning import Reasoner
 from ..core.memory import Memory
-from ..core.tool import Tool
-from ..core.llm import LLMClient
+from ...tools.tool import Tool
+from ...infraestructure.llm.llm import LLMClient
 from ..planners import Plan, PlanStep
 
 
