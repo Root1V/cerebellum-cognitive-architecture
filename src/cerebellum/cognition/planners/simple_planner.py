@@ -1,5 +1,5 @@
 from ..core.planner import Planner
-from ..core.tool import Tool
+from ...tools.tool import Tool
 
 
 class SimplePlanner(Planner):

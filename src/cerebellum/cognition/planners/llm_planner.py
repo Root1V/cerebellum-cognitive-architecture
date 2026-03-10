@@ -1,19 +1,8 @@
 # planners/llm_planner.py
 
-from pydantic import BaseModel, Field
-
 from ..core.planner import Planner
-from ..core.llm import LLMClient
-
-
-class PlanStep(BaseModel):
-    step:   int = Field(description="Execution order of this step, starting at 1.")
-    action: str = Field(description="Name of the tool or cognitive action to invoke, e.g. 'search_market_data' or 'analyze_trends'.")
-    goal:   str = Field(description="Specific sub-objective this step must accomplish, expressed as a concrete outcome.")
-
-
-class Plan(BaseModel):
-    steps: list[PlanStep] = Field(description="Ordered list of steps that fully decompose the goal. Each step maps to one tool or action.")
+from ..core.models import Plan, PlanStep
+from ...infraestructure.llm.llm import LLMClient
 
 
 class LLMPlanner(Planner):
@@ -47,3 +36,4 @@ class LLMPlanner(Planner):
             PlanStep(step=2, action="analyze_trends",     goal=str(goal)),
             PlanStep(step=3, action="generate_summary",   goal=str(goal)),
         ])
+

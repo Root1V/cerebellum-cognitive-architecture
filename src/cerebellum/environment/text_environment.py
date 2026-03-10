@@ -3,7 +3,7 @@
 # Entorno de texto simple: adecuado para desarrollo y testing.
 # Encapsula un contexto estático como string descriptivo del dominio.
 
-from ..core.environment import Environment
+from ..cognition.core.environment import Environment
 
 
 class TextEnvironment(Environment):

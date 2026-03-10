@@ -11,12 +11,12 @@ import logging
 from axonium import LlamaAdapter
 from pydantic import BaseModel
 
-from ..core.llm import LLMClient as LLMClientBase
+from .llm import LLM
 
 logger = logging.getLogger("cerebellum.llm")
 
 
-class LLMClient(LLMClientBase):
+class LLMClient(LLM):
     """
     Cliente LLM local basado en axonium SDK.
 

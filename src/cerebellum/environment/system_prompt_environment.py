@@ -4,7 +4,7 @@
 # Úsalo cuando el agente opera sobre un LLM y necesitas definir
 # identidad, restricciones y comportamiento del modelo.
 
-from ..core.environment import Environment
+from ..cognition.core.environment import Environment
 
 
 class SystemPromptEnvironment(Environment):

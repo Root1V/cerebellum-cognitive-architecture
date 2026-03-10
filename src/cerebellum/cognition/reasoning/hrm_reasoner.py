@@ -2,7 +2,7 @@
 from ..core.reasoning import Reasoner
 from ..core.planner import Planner
 from ..core.memory import Memory
-from ..core.tool import Tool
+from ...tools.tool import Tool
 from ..planners import Plan
 
 

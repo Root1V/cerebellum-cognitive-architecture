@@ -13,7 +13,7 @@
 # Environment es el mundo donde actúa
 
 from ..core.action import Action
-from ..core.tool import Tool
+from ...tools.tool import Tool
 
 
 class ConsoleAction(Action):

@@ -1,6 +1,6 @@
 from typing import Any
 
-from ..core.tool import Tool
+from .tool import Tool
 
 
 class DatabaseTool(Tool):

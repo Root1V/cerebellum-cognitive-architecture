@@ -9,9 +9,9 @@ from ..core.memory import Memory
 from ..core.perception import Perception
 from ..core.planner import Planner
 from ..core.reasoning import Reasoner
-from ..core.tool import Tool
-from ..observability.tracer import Tracer
-from ..observability.metrics import Metrics
+from ...tools.tool import Tool
+from ...infraestructure.observability.tracer import Tracer
+from ...infraestructure.observability.metrics import Metrics
 from typing import Any
 
 _MAX_GOAL_DEPTH = 5

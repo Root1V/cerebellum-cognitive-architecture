@@ -9,7 +9,7 @@
 
 from typing import Any
 
-from ..core.environment import Environment
+from ..cognition.core.environment import Environment
 
 
 class APIEnvironment(Environment):

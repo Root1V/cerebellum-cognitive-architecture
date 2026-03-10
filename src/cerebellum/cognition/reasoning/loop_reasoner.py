@@ -24,8 +24,8 @@
 
 from ..core.reasoning import Reasoner
 from ..core.memory import Memory
-from ..core.tool import Tool
-from ..core.llm import LLMClient
+from ...tools.tool import Tool
+from ...infraestructure.llm.llm import LLMClient
 from ..planners import Plan
 
 
@@ -155,6 +155,7 @@ class LoopReasoner(Reasoner):
 
         # 2. Delegar al LLM
         if self.llm:
+
             return await self.llm.think(
                 prompt=f"Execute step '{step}'. Step data: {meta}",
                 context="You are a reasoning assistant operating in a ReAct loop. Execute the step and return an observation.",
