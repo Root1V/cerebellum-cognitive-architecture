@@ -23,9 +23,6 @@ async def main():
     await wm.update({"item_4": "nuevo_valor_4", "item_5": "valor_5"})
     print("Estado tras update:", wm._state)
 
-    # Limpiar memoria (simulado)
-    wm._state.clear()
-    print("Memoria después de limpiar:", wm._state)
-
+    
 if __name__ == "__main__":
     asyncio.run(main())
