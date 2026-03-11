@@ -10,20 +10,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-from cerebellum.cognition.action import ConsoleAction
-from cerebellum.cognition.attention import SimpleAttention
-from cerebellum.cognition.core import CognitiveAgent
-from cerebellum.cognition.learning import SimpleLearning
-from cerebellum.cognition.memory import EpisodicMemory, WorkingMemory
 from cerebellum.cognition.perception import TextPerception
-from cerebellum.cognition.planners import SimplePlanner
-from cerebellum.cognition.reasoning import LoopReasoner
-from cerebellum.cognition.runtime import CognitiveSystem
-from cerebellum.environment import TextEnvironment
-from cerebellum.cognition.controller import SimpleController
 from cerebellum.infraestructure.llm.llm_client import LLMClient
 from cerebellum.cognition.neural.llm_neural import LLMNeuralEngine
-from cerebellum.cognition.symbolic import DeclarativeRuleEngine, LLMRuleCompiler, Rule, Condition
+from cerebellum.cognition.symbolic import (
+    DeclarativeRuleEngine,
+    LLMRuleCompiler,
+    Rule,
+    DeclarativeConstraintEngine,
+    LLMConstraintCompiler,
+    Constraint,
+)
 from cerebellum.cognition.core.models import Fact
 
 
@@ -54,9 +51,10 @@ async def main():
 
     if perception_result.interpretation:
         interp = perception_result.interpretation
+        # Force a low confidence value to trigger constraint violation
         base_facts = [
-            Fact(kind="perception", name="intent",     value=interp.intent,     confidence=interp.confidence),
-            Fact(kind="perception", name="confidence", value=interp.confidence, confidence=1.0),
+            Fact(kind="perception", name="intent",     value=interp.intent,     confidence=0.4),
+            Fact(kind="perception", name="confidence", value=0.4, confidence=1.0),
             Fact(kind="perception", name="summary",    value=interp.summary,    confidence=1.0),
         ]
         # Add any extracted facts from the neural interpretation directly
@@ -72,16 +70,16 @@ async def main():
     # into a deterministic Rule that the engine runs with no further LLM calls.
     # Rules can be authored in any language — the compiler normalizes output to English.
     # Passing available_facts ensures generated conditions match the real fact vocabulary.
-    rule_search_required = await compiler.compile(
+    rule_search_required: Rule = await compiler.compile(
         "If intent is 'research' and confidence is above 0.7, "
         "mark that an external search is required.",
         available_facts=base_facts,
     )
-    rule_low_confidence = await compiler.compile(
+    rule_low_confidence: Rule = await compiler.compile(
         "If confidence is below 0.9, flag the result as unreliable.",
         available_facts=base_facts,
     )
-    rule_mercado_latam = await compiler.compile(                          # Spanish
+    rule_mercado_latam: Rule = await compiler.compile(                          # Spanish
         "Si la región del mercado es 'LATAM', marcar que se requiere "
         "un análisis regional específico.",
         available_facts=base_facts,
@@ -109,6 +107,43 @@ async def main():
             print(f" • [{f.kind}] {f.name} = {f.value!r}")
     else:
         print("  (no rules fired)")
+
+    # ─────────────────────────────────────────────
+    # 4. CONSTRAINT ENGINE — guardrails en lenguaje
+    #    natural, compilados igual que las reglas.
+    #    El usuario de negocio solo describe el guardrail;
+    #    el LLM lo traduce a Constraint una sola vez.
+    # ─────────────────────────────────────────────
+    all_facts = base_facts + derived_facts
+
+    constraint_compiler = LLMConstraintCompiler(llm_client=llm)
+
+    constraint_low_confidence: Constraint = await constraint_compiler.compile(
+        "If confidence is below 0.5, report as unreliable result with high severity.",
+        available_facts=all_facts,
+    )
+    constraint_missing_analysis: Constraint = await constraint_compiler.compile(  # Spanish
+        "Si se detectó la región LATAM pero no se derivó ningún análisis regional, "
+        "reportar que falta análisis regional con severidad media.",
+        available_facts=all_facts,
+    )
+
+    print("\n── COMPILED CONSTRAINTS ──")
+    print(constraint_low_confidence)
+    print(constraint_missing_analysis)
+
+    constraint_engine = DeclarativeConstraintEngine(
+        constraints=[constraint_low_confidence, constraint_missing_analysis]
+    )
+
+    violations = constraint_engine.validate(all_facts)
+
+    print("\n── CONSTRAINT VIOLATIONS ──")
+    if violations:
+        for v in violations:
+            print(f" ! [{v.severity.upper()}] {v.name}: {v.message}")
+    else:
+        print("  (no violations)")
 
 
 asyncio.run(main())
