@@ -31,3 +31,6 @@ class EpisodicMemory(Memory):
     async def recall(self, query: str) -> list:
         """Recupera eventos relevantes. Alias semántico de retrieve()."""
         return await self.retrieve(query)
+    
+    async def recent(self, limit: int = 10) -> list[dict]:
+        return self.events[-limit:]
