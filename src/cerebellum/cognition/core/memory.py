@@ -15,12 +15,12 @@ class Memory(ABC):
 
     @abstractmethod
     async def store(self, key: str, value: Any) -> None:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     async def retrieve(self, query: str) -> Any:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     async def update(self, item: Any) -> None:
-        pass
+        raise NotImplementedError

@@ -3,10 +3,29 @@
 from ..core.memory import Memory
 
 
+
 class MemoryStream(Memory):
     """
-    Memory stream: flujo cronológico de todos los eventos cognitivos.
-    Inspirado en el paper 'Generative Agents' (Park et al., 2023).
+    MemoryStream
+    ------------
+    Flujo cronológico de todos los eventos cognitivos.
+
+    Objetivo funcional:
+        - Flujo continuo y cronológico de eventos, percepciones, acciones, pensamientos y cambios de estado. 
+        - Permite reconstruir el contexto, analizar secuencias, detectar patrones y mantener un historial completo.
+        - Inspirado en 'Generative Agents' (Park et al., 2023): simula un "log" cognitivo.
+
+    Uso típico:
+        - Agregar eventos con timestamp.
+        - Recuperar eventos recientes o filtrar por consulta.
+        - Analizar el historial completo para inferir contexto o aprendizaje.
+
+    Métodos:
+        - store(key, value): agrega un evento simple.
+        - update(item): agrega un evento complejo.
+        - add(event): agrega evento con timestamp.
+        - retrieve(query): filtra eventos por consulta.
+        - recent(n): devuelve los N eventos más recientes.
     """
 
     def __init__(self):
