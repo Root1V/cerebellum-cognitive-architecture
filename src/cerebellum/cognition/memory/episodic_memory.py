@@ -3,9 +3,30 @@
 from ..core.memory import Memory
 
 
+
 class EpisodicMemory(Memory):
     """
-    Memoria episódica: almacena experiencias pasadas (eventos, acciones, resultados).
+    EpisodicMemory
+    --------------
+    Memoria episódica cognitiva.
+
+    Objetivo funcional:
+        - Almacenar experiencias pasadas de eventos, acciones y resultados.
+        - Permite recordar, analizar y consultar el historial de interacciones o situaciones vividas por el agente.
+        - Simula un "diario" cognitivo: registro cronológico de lo que ocurrió, cuándo y cómo.
+
+    Uso típico:
+        - Guardar eventos relevantes (tareas, resultados, decisiones, contextos).
+        - Recuperar eventos por consulta (query) para aprender, razonar o explicar comportamientos.
+        - Consultar los eventos más recientes para mantener contexto histórico.
+
+    Métodos:
+        - store(key, value): almacena un evento simple.
+        - update(item): almacena un evento complejo (dict).
+        - retrieve(query): recupera eventos que coinciden con la consulta.
+        - store_event(event): alias semántico de update.
+        - recall(query): alias semántico de retrieve.
+        - recent(limit): devuelve los últimos eventos.
     """
 
     def __init__(self):

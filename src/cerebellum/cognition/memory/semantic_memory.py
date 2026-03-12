@@ -6,9 +6,27 @@ from typing import Any
 from ..core.memory import Memory
 
 
+
 class SemanticMemory(Memory):
     """
-    Memoria semántica: conocimiento del mundo (hechos, documentos, knowledge base).
+    SemanticMemory
+    --------------
+    Memoria semántica cognitiva.
+
+    Objetivo funcional:
+        - Almacenar y organizar conocimiento general, hechos, conceptos, relaciones y documentos.
+        - Permite acceder a información estructurada sobre el mundo, reglas, definiciones y bases de conocimiento.
+        - Simula una "base de datos" cognitiva: conocimiento estable, no ligado a experiencias puntuales.
+
+    Uso típico:
+        - Guardar hechos, definiciones, relaciones, documentos, reglas.
+        - Recuperar información por clave o consulta semántica.
+        - Actualizar el conocimiento conforme se aprende o se recibe nueva información.
+
+    Métodos:
+        - store(key, value): almacena un hecho o concepto.
+        - retrieve(query): recupera información por clave.
+        - update(item): actualiza múltiples hechos/conceptos.
     """
 
     def __init__(self):
