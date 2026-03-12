@@ -3,6 +3,7 @@
 
 from cerebellum.cognition.memory.working_memory import WorkingMemory
 from cerebellum.cognition.memory.episodic_memory import EpisodicMemory
+from cerebellum.cognition.memory.manager import MemoryManager
 
 
 import asyncio
@@ -41,23 +42,44 @@ async def episodic_example():
     recientes = await em.recent(1)
     print("Evento más reciente:", recientes)
 
+async def manager_example():
+    mm = MemoryManager()
+    print("Memoria de trabajo inicial:", mm.get_working()._state)
+    print("Memoria episódica inicial:", mm.get_episodic().events)
+    print("Memoria semántica inicial:", mm.get_semantic().knowledge)
+    print("MemoryStream inicial:", mm.get_stream().memories)
+
+    # Almacenar datos simples
+    await mm.remember("item_simple", "valor_simple")
+    print("WorkingMemory tras simple:", mm.get_working()._state)
+
+    # Almacenar evento episódico
+    evento = {"goal": "resolver problema", "result": "éxito", "timestamp": "2026-03-12"}
+    await mm.remember("evento_1", evento)
+    print("EpisodicMemory tras evento:", mm.get_episodic().events)
+
+    # Almacenar hecho semántico
+    hecho = {"fact": "París es capital de Francia", "definition": "Ciudad capital", "document": "wiki"}
+    await mm.remember("hecho_1", hecho)
+    print("SemanticMemory tras hecho:", mm.get_semantic().knowledge)
+
+    # Almacenar evento stream
+    stream_event = {"time": "2026-03-12T10:00", "data": "Sensor activado"}
+    await mm.remember("stream_1", stream_event)
+    print("MemoryStream tras evento:", mm.get_stream().memories)
+
+    # Recuperar de cada memoria
+    val_working = await mm.recall("item_simple", "working")
+    val_episodic = await mm.recall("evento_1", "episodic")
+    val_semantic = await mm.recall("hecho_1", "semantic")
+    val_stream = await mm.recall("stream_1", "stream")
+    print("Recall WorkingMemory:", val_working)
+    print("Recall EpisodicMemory:", val_episodic)
+    print("Recall SemanticMemory:", val_semantic)
+    print("Recall MemoryStream:", val_stream)
+
     
 if __name__ == "__main__":
     asyncio.run(working_example())
     asyncio.run(episodic_example())
-
-
-# WorkingMemory (memoria de trabajo): almacena información temporal y actual, útil para tareas en curso, cálculos o contexto inmediato. Es como una “RAM” cognitiva: rápido acceso, datos volátiles, se usa para manipular información activa.
-
-# EpisodicMemory (memoria episódica): guarda experiencias pasadas, eventos, acciones y resultados. Es como un “diario” cognitivo: registra lo que ocurrió, cuándo y cómo, permitiendo recordar y analizar experiencias previas.
-
-# Agregado item_1: {'item_0': 'valor_0', 'item_1': 'valor_1'}
-# Agregado item_2: {'item_0': 'valor_0', 'item_1': 'valor_1', 'item_2': 'valor_2'}
-# Agregado item_3: {'item_0': 'valor_0', 'item_1': 'valor_1', 'item_2': 'valor_2', 'item_3': 'valor_3'}
-# Agregado item_4: {'item_0': 'valor_0', 'item_1': 'valor_1', 'item_2': 'valor_2', 'item_3': 'valor_3', 'item_4': 'valor_4'}
-# Valor de 'item_3': valor_3
-# Estado tras update: {'item_0': 'valor_0', 'item_1': 'valor_1', 'item_2': 'valor_2', 'item_3': 'valor_3', 'item_4': 'nuevo_valor_4', 'item_5': 'valor_5'}
-# Memoria episódica inicial: []
-# Eventos almacenados: [{'goal': 'resolver problema', 'result': 'éxito', 'timestamp': '2026-03-11'}, {'goal': 'leer documento', 'result': 'fallo', 'timestamp': '2026-03-10'}]
-# Eventos con 'éxito': [{'goal': 'resolver problema', 'result': 'éxito', 'timestamp': '2026-03-11'}]
-# Evento más reciente: [{'goal': 'leer documento', 'result': 'fallo', 'timestamp': '2026-03-10'}]
+    asyncio.run(manager_example())
