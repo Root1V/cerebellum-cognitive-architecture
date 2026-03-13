@@ -3,7 +3,7 @@
 from ..core.reasoning import Reasoner
 from ..core.memory import Memory
 from ...tools.tool import Tool
-from ...infraestructure.llm.llm import LLMClient
+from ...infraestructure.llm.llm import LLM
 from ..planners import Plan, PlanStep
 
 
@@ -19,7 +19,7 @@ class LLMReasoner(Reasoner):
         reasoner = LLMReasoner(llm_client=LLMClient(model="Mixtral-7B..."))
     """
 
-    def __init__(self, llm_client: LLMClient | None = None):
+    def __init__(self, llm_client: LLM | None = None):
         self.llm = llm_client
 
     async def execute(

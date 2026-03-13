@@ -2,7 +2,7 @@
 
 from ..core.planner import Planner
 from ..core.models import Plan, PlanStep
-from ...infraestructure.llm.llm import LLMClient
+from ...infraestructure.llm.llm import LLM
 
 
 class LLMPlanner(Planner):
@@ -19,7 +19,7 @@ class LLMPlanner(Planner):
         # plan es siempre una instancia de Plan
     """
 
-    def __init__(self, llm_client: LLMClient | None = None):
+    def __init__(self, llm_client: LLM | None = None):
         self.llm = llm_client
 
     async def create_plan(self, goal, context=None) -> Plan:

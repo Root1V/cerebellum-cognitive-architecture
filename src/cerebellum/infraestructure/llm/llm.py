@@ -36,6 +36,3 @@ class LLM(ABC):
                        None retorna el string crudo del LLM.
         """
 
-
-# Backward-compatible alias
-LLMClient = LLM

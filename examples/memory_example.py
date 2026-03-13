@@ -27,20 +27,25 @@ async def working_example():
 
 async def episodic_example():
     em = EpisodicMemory()
-    print("Memoria episódica inicial:", em.events)
+    print("Memoria episódica inicial:", em.size)
 
     # Almacenar eventos
-    await em.store_event({"goal": "resolver problema", "result": "éxito", "timestamp": "2026-03-11"})
-    await em.store_event({"goal": "leer documento", "result": "fallo", "timestamp": "2026-03-10"})
-    print("Eventos almacenados:", em.events)
+    await em.store_event({"goal": "resolver problema", "result": "éxito"})
+    await em.store_event({"goal": "leer documento", "result": "fallo"})
+    await em.store_event({"goal": "escribir informe", "result": "éxito"})
+    print("Eventos almacenados:", em.size)
 
     # Recuperar eventos por query
-    encontrados = await em.recall("éxito")
-    print("Eventos con 'éxito':", encontrados)
+    encontrados = await em.retrieve("éxito")
+    print("Eventos con 'éxito':")
+    for evento in encontrados:
+        print(evento)
 
     # Consultar los más recientes
     recientes = await em.recent(1)
-    print("Evento más reciente:", recientes)
+    print("Evento más reciente:")
+    for evento in recientes:
+        print(evento)
 
 async def manager_example():
     mm = MemoryManager()
@@ -80,6 +85,6 @@ async def manager_example():
 
     
 if __name__ == "__main__":
-    asyncio.run(working_example())
+    #asyncio.run(working_example())
     asyncio.run(episodic_example())
-    asyncio.run(manager_example())
+    #asyncio.run(manager_example())

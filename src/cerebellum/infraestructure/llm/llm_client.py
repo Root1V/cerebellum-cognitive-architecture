@@ -19,28 +19,6 @@ logger = logging.getLogger("cerebellum.llm")
 class LLMClient(LLM):
     """
     Cliente LLM local basado en axonium SDK.
-
-    Ejemplo sin structured output:
-        llm = LLMClient(model="Mixtral-7B-Instruct-v0.1.Q4_0.gguf")
-        text = await llm.think(
-            prompt="Analiza el mercado de IA en LATAM.",
-            context="Eres un asistente de planificación.",
-        )
-
-    Ejemplo con structured output:
-        class PlanStep(BaseModel):
-            action: str
-            goal: str
-
-        class Plan(BaseModel):
-            steps: list[PlanStep]
-
-        plan = await llm.think(
-            prompt="Break this goal into steps: ...",
-            context="You are a planning assistant.",
-            output_model=Plan,
-        )
-        # plan es una instancia validada de Plan
     """
 
     def __init__(
