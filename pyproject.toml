@@ -7,6 +7,8 @@ requires-python = ">=3.13"
 dependencies = [
     "axonium>=0.6.0",
     # pydantic is available through axonium's transitive dependencies
+    "qdrant-client>=1.17.0",
+    "sentence-transformers>=5.3.0",
 ]
 
 [project.optional-dependencies]

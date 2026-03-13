@@ -278,3 +278,4 @@ CognitiveSystem
     ✅ Orquesta el ciclo
     ✅ Decide cuántos ciclos correr y cuándo detenerse
 
+docker run -p 6333:6333 qdrant/qdrant
