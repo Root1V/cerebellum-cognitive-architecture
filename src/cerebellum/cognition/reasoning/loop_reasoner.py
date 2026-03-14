@@ -25,7 +25,7 @@
 from ..core.reasoning import Reasoner
 from ..core.memory import Memory
 from ...tools.tool import Tool
-from ...infraestructure.llm.llm import LLMClient
+from ...infraestructure.llm.llm import LLM
 from ..planners import Plan
 
 
@@ -47,7 +47,7 @@ class LoopReasoner(Reasoner):
     devuelve el historial acumulado hasta ese momento.
     """
 
-    def __init__(self, llm_client: LLMClient | None = None, max_iterations: int = 10):
+    def __init__(self, llm_client: LLM | None = None, max_iterations: int = 10):
         self.llm = llm_client
         self.max_iterations = max_iterations
 
