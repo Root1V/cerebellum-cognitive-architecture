@@ -1,11 +1,14 @@
 # memory/episodic_memory.py
 
 import datetime
+import logging
 from typing import Any
 import uuid
 
 from pydantic import BaseModel
 
+from ...infraestructure.storage.db_memory import MemoryStorage
+from ...infraestructure.storage.db_episodic import MemoryEpisodicStorage
 from ...infraestructure.llm.embedding import Embedding
 from ...infraestructure.llm.embedd_client import EmbeddingClient
 from ..core.memory import Memory
@@ -47,23 +50,38 @@ class EpisodicMemory(Memory):
         - recent(limit): devuelve los últimos eventos.
     """
 
-    def __init__(self):
+    def __init__(self, embedding: Embedding = None, storage: MemoryStorage = None):
         self._events: list[EventMemory] = []
-        self._semantic: Embedding = EmbeddingClient()
-        
+        self._semantic: Embedding = embedding or EmbeddingClient()
+        self._storage: MemoryStorage = storage or MemoryEpisodicStorage()
+        self._logger = logging.getLogger(self.__class__.__name__)
+
+    async def initialize(self) -> None:
+        """
+        Inicializa el backend de almacenamiento.
+
+        Debe llamarse antes de usar la memoria episódica para garantizar
+        que la colección Qdrant existe y está lista para operar.
+
+        Example::
+
+            memory = EpisodicMemory()
+            await memory.initialize()
+        """
+        await self._storage.initialize()
 
     # --- Memory ABC ---    
     async def event_to_text(self, event: dict) -> str:
         return ", ".join(f"{k}: {v}" for k, v in event.items())
     
-    async def _store(self,  event: EventMemory) -> None:
+    async def _store(self, event: EventMemory) -> None:
         text = await self.event_to_text(event.payload)
         vector = await self._semantic.encode(text)
         event.vector = vector
-        
-        print(f"Storing event: {event}") 
-        
+
+        self._logger.debug("Almacenando evento: %s", event)
         self._events.append(event)
+        await self._storage.store_memory(event.id, vector, event.payload)
         
     async def store_event(self, event: dict) -> None:
         event_memory = EventMemory(payload=event, vector=[])
