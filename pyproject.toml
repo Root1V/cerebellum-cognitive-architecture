@@ -1,3 +1,4 @@
+
 [project]
 name = "cerebellum"
 version = "0.1.0"
@@ -12,9 +13,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-llama = [
-  "axonium>=0.6.0",
+dev = [
+  "pytest>=8.0.0",
+  "pytest-asyncio>=0.23.0",
+  "flake8>=7.0.0",
 ]
+
+
 
 [tool.setuptools.packages.find]
 where = ["src"]

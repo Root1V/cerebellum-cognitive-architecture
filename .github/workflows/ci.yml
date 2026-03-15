@@ -30,10 +30,9 @@ jobs:
         run: |
           uv pip install --system -e .[dev]
 
+
       - name: Run tests with pytest
         run: pytest tests
 
       - name: Lint with flake8
-        run: |
-          pip install flake8
-          flake8 src/ || echo "Lint warnings found."
+        run: flake8 src/ || echo "Lint warnings found."
