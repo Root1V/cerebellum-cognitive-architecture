@@ -31,12 +31,7 @@ jobs:
           uv pip install --system -e .[dev]
 
       - name: Run tests with pytest
-        run: |
-          if [ -f tests/test_cognition.py ]; then
-            pytest tests
-          else
-            echo "No tests found. Skipping."
-          fi
+        run: pytest tests
 
       - name: Lint with flake8
         run: |
