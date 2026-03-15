@@ -18,7 +18,7 @@ description:
 
   ## Ramas principales
   - **main**: Código de producción estable.
-  - **develop** (opcional): Integración de nuevas funcionalidades antes de pasar a main (Git Flow).
+  - **develop**: Integración de nuevas funcionalidades antes de pasar a main (Git Flow).
 
   ## Prefijos de ramas
   - **feature/** o **feat/**: Nuevas funcionalidades o mejoras grandes.
