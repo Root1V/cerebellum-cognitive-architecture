@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, 'feature/*', 'feat/*', 'refactor/*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        run: |
+          pip install uv
+
+      - name: Instalar axonium desde repo público
+        run: |
+          uv pip install --system git+https://github.com/Root1V/axonium-sdk.git@main
+
+      - name: Install dependencies with uv
+        run: |
+          uv pip install --system -e .[dev]
+
+
+      - name: Run tests with pytest
+        run: pytest tests
+
+      - name: Lint with flake8
+        run: flake8 src/ || echo "Lint warnings found."

@@ -1,0 +1,91 @@
+
+
+name: release-please
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run release-please
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          release-type: python
+          package-name: cerebellum
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  gen-release-notes:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Print release info
+        run: |
+          echo "Tag: ${{ needs.release-please.outputs.tag_name }}"
+          echo "Version: ${{ needs.release-please.outputs.version }}"
+      - name: Get commits since last release
+        id: commits
+        run: |
+          TAG="${{ needs.release-please.outputs.tag_name }}"
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+          if [ -n "$PREV_TAG" ]; then
+            COMMITS=$(git log $PREV_TAG..HEAD --pretty=format:"- %s" 2>/dev/null || echo "")
+          else
+            COMMITS=$(git log --pretty=format:"- %s" -n 50)
+          fi
+          # Guardamos los commits en un archivo para evitar problemas de escape en variables
+          echo "$COMMITS" > commits.txt
+      - name: Generate release notes with OpenAI LLM
+        id: gen-ai-notes
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          echo "Generando notas de release con OpenAI..."
+          COMMITS_JSON=$(jq -Rs . < commits.txt)
+
+          # Construimos el payload de forma segura
+          PAYLOAD=$(jq -n \
+            --arg tag "$TAG" \
+            --argjson commits "$COMMITS_JSON" \
+            '{
+              model: "gpt-4o-mini",
+              messages: [
+                {
+                  role: "system",
+                  content: "Eres un redactor técnico experto. A partir de la lista de cambios que te proporciono, genera notas de release en castellano, bien estructuradas y profesionales. Incluye: un resumen breve de 1-2 líneas al inicio, y secciones para Nuevas funcionalidades, Correcciones de bugs, y otros cambios. Usa un tono cercano pero profesional."
+                },
+                {
+                  role: "user",
+                  content: ("Genera las notas de release para la versión " + $tag + " basándote en los siguientes commits:\n\n" + $commits)
+                }
+              ],
+              temperature: 0.7,
+              max_tokens: 512
+            }')
+
+          RESPONSE=$(curl https://api.openai.com/v1/chat/completions \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $OPENAI_API_KEY" \
+            -d "$PAYLOAD")
+          SUMMARY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
+          echo "Notas de release generadas por LLM:"
+          echo "$SUMMARY"
