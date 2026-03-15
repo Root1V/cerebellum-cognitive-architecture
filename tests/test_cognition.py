@@ -1,23 +1,30 @@
 """
-Tests for cerebellum cognitive components: MemoryManager, WorkingMemory, EpisodicMemory, SemanticMemory, MemoryStream.
+Tests for cerebellum cognitive components: MemoryManager, WorkingMemory, SemanticMemory, MemoryStream.
+Todos los tests usan mocks para evitar dependencias externas (Qdrant, etc).
 """
 
 import pytest
 import asyncio
+from unittest.mock import patch, AsyncMock
 from cerebellum.cognition.memory.manager import MemoryManager
 from cerebellum.cognition.memory.working_memory import WorkingMemory
-from cerebellum.cognition.memory.episodic_memory import EpisodicMemory
 from cerebellum.cognition.memory.semantic_memory import SemanticMemory
 from cerebellum.cognition.memory.memory_stream import MemoryStream
 
 
 @pytest.mark.asyncio
-async def test_memory_manager_remember_and_recall():
-    mm = MemoryManager()
-    await mm.remember("foo", {"goal": "bar", "result": 42, "timestamp": "now"})
-    result = await mm.recall("foo", memory_type="episodic")
-    # Puede ser None si la implementación de EpisodicMemory aún no almacena correctamente
-    assert result is None or result is not None
+async def test_memory_manager_remember_and_recall_with_mock():
+    # Mockear EpisodicMemory para evitar acceso a Qdrant
+    with patch("cerebellum.cognition.memory.manager.EpisodicMemory", autospec=True) as MockEpisodic:
+        mock_epi = MockEpisodic.return_value
+        mock_epi.store = AsyncMock()
+        mock_epi.retrieve = AsyncMock(return_value={"goal": "bar", "result": 42, "timestamp": "now"})
+
+        mm = MemoryManager()
+        mm.episodic = mock_epi  # Forzar el mock
+        await mm.remember("foo", {"goal": "bar", "result": 42, "timestamp": "now"})
+        result = await mm.recall("foo", memory_type="episodic")
+        assert result == {"goal": "bar", "result": 42, "timestamp": "now"}
 
 
 @pytest.mark.asyncio
