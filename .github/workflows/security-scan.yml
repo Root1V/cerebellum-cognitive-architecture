@@ -1,0 +1,59 @@
+name: Security-Scan
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+
+  security:
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+      # Requerido por github/codeql-action/upload-sarif
+      # Gratis en repos públicos; requiere GitHub Advanced Security en privados.
+      security-events: write
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+
+      - name: Install security tools
+        run: |
+          pip install bandit pip-audit
+
+      - name: Dependency vulnerability scan
+        run: pip-audit
+
+      - name: Static security analysis
+        run: |
+          bandit -r src \
+            --severity-level medium \
+            --format sarif \
+            --output bandit-results.sarif \
+          || true
+          # || true: bandit retorna código ≠0 cuando encuentra issues.
+          # Usamos || true para que el step no falle aquí — el upload-sarif
+          # persiste los hallazgos y puede bloquear el PR desde Security tab.
+
+      - name: Upload SARIF to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        # continue-on-error: si el repo se vuelve privado sin GitHub Advanced Security,
+        # este step falla con warning pero el workflow completo no se rompe.
+        continue-on-error: true
+        with:
+          sarif_file: bandit-results.sarif
+          category: bandit

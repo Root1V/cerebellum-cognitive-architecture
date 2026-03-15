@@ -1,0 +1,25 @@
+name: Deploy-Production
+
+on:
+  workflow_run:
+    workflows: ["Docker-Publish"]
+    types:
+      - completed
+
+jobs:
+
+  deploy:
+
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 15
+
+    environment: production
+
+    steps:
+
+      - name: Deploy service
+        run: |
+          echo "Deploying cognitive system to production"
