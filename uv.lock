@@ -48,7 +48,7 @@ wheels = [
 [[package]]
 name = "axonium"
 version = "0.6.0"
-source = { registry = "../repo_pi" }
+source = { git = "https://github.com/Root1V/axonium-sdk.git?rev=main#ce761173fc731b17cfb1a076c1487c40594a9fc3" }
 dependencies = [
     { name = "httpx" },
     { name = "langchain-core" },
@@ -58,10 +58,6 @@ dependencies = [
     { name = "openai" },
     { name = "pydantic" },
     { name = "python-dotenv" },
-]
-sdist = { path = "axonium-0.6.0.tar.gz" }
-wheels = [
-    { path = "axonium-0.6.0-py3-none-any.whl" },
 ]
 
 [[package]]
@@ -134,34 +130,24 @@ dependencies = [
 [package.optional-dependencies]
 dev = [
     { name = "flake8" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-]
-
-[package.dev-dependencies]
-dev = [
     { name = "mypy" },
     { name = "pytest" },
+    { name = "pytest-asyncio" },
     { name = "ruff" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "axonium", specifier = ">=0.6.0" },
+    { name = "axonium", git = "https://github.com/Root1V/axonium-sdk.git?rev=main" },
     { name = "flake8", marker = "extra == 'dev'", specifier = ">=7.0.0" },
+    { name = "mypy", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23.0" },
     { name = "qdrant-client", specifier = ">=1.17.0" },
+    { name = "ruff", marker = "extra == 'dev'" },
     { name = "sentence-transformers", specifier = ">=5.3.0" },
 ]
 provides-extras = ["dev"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "mypy" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
 
 [[package]]
 name = "certifi"
