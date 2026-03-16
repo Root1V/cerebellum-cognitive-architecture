@@ -33,7 +33,6 @@ jobs:
         uses: googleapis/release-please-action@v4
         with:
           release-type: python
-          package-name: cerebellum
           token: ${{ secrets.GITHUB_TOKEN }}
 
   gen-release-notes:
