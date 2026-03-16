@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.1.1...v0.1.2) (2026-03-16)
+
+
+### Bug Fixes
+
+* **ci:** resolve remaining CI issues ([be59f01](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/be59f019750395a2d9fb22c66df4fa5767cf288d))
+
 ## [0.1.1](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.1.0...v0.1.1) (2026-03-16)
 
 
