@@ -1,3 +1,9 @@
+import os
+os.environ["LLM_BASE_URL"] = "http://mock"
+os.environ["LLM_API_KEY"] = "mock_key"
+os.environ["LLM_USERNAME"] = "mock_user"
+os.environ["LLM_PASSWORD"] = "mock_pass"
+
 import pytest
 from unittest.mock import AsyncMock, patch
 from pydantic import BaseModel
@@ -16,7 +22,6 @@ class MockMessage(BaseModel):
 class MockChatResponse(BaseModel):
     choices: list[MockMessage]
 
-
 @pytest.mark.asyncio
 async def test_llm_client_basic_integration():
     """Prueba que el cliente envia mensajes y procesa la respuesta base string."""
@@ -27,7 +32,7 @@ async def test_llm_client_basic_integration():
         )
         mock_chat.return_value = mock_response
 
-        client = LLMClient(model="test-model")
+        client = LLMClient(model="test-model", base_url="http://mock")
         result = await client.think(prompt="Say hello")
 
         assert result == "Hello world!"
@@ -51,7 +56,7 @@ async def test_llm_client_structured_output():
         )
         mock_chat.return_value = mock_response
 
-        client = LLMClient(model="test-model")
+        client = LLMClient(model="test-model", base_url="http://mock")
         result = await client.think(prompt="Extract data", output_model=UserInfo)
 
         assert isinstance(result, UserInfo)

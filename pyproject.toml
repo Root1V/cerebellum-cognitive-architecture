@@ -23,3 +23,11 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.uv.sources]
+axonium = { git = "https://github.com/Root1V/axonium-sdk.git", rev = "main" }
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]

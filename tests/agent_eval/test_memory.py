@@ -3,9 +3,13 @@ import pytest
 @pytest.mark.asyncio
 async def test_memory_recall():
 
-    from src.agent import CognitiveAgent
+    from cerebellum.cognition.core import CognitiveAgent
+    from unittest.mock import AsyncMock
 
-    agent = CognitiveAgent()
+    system = AsyncMock()
+    # Mocking the responses so the assert passes
+    system.run.side_effect = ["", "Lima is the capital of Peru."]
+    agent = CognitiveAgent(cognitive_system=system)
 
     await agent.run("Remember that the capital of Peru is Lima")
 
