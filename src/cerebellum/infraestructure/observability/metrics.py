@@ -1,5 +1,7 @@
 class Metrics:
 
+
+
     def __init__(self):
         self.counters: dict[str, int] = {}
 
@@ -8,5 +10,3 @@ class Metrics:
 
     def report(self) -> dict[str, int]:
         return self.counters
-    
-    

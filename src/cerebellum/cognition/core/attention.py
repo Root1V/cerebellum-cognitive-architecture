@@ -16,11 +16,12 @@
 
 from abc import ABC, abstractmethod
 
+from ..core.models import PerceptionResult
 
 class Attention(ABC):
 
     @abstractmethod
-    async def select(self, perception: dict, memory: dict):
+    async def select(self, perception: PerceptionResult, memory: dict):
         """
         Select relevant information for reasoning.
         

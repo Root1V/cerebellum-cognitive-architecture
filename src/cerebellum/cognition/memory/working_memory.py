@@ -32,8 +32,8 @@ class WorkingMemory(Memory):
     async def store(self, key: str, value: Any) -> None:
         self._state[key] = value
 
-    async def retrieve(self, key: str) -> Any:
-        return self._state.get(key)
+    async def retrieve(self, query: str) -> Any:
+        return self._state.get(query)
 
     async def update(self, item: dict[str, Any]) -> None:
         if isinstance(item, dict):

@@ -1,5 +1,7 @@
 # memory/memory_stream.py
 
+from typing import Any
+
 from ..core.memory import Memory
 
 
@@ -33,10 +35,10 @@ class MemoryStream(Memory):
 
     # --- Memory ABC ---
 
-    async def store(self, key: str, value) -> None:
+    async def store(self, key: str, value: Any) -> None:
         self.memories.append({"key": key, "value": value})
 
-    async def retrieve(self, query: str) -> list:
+    async def retrieve(self, query: str) -> list[Any]:
         return [m for m in self.memories if query in str(m)]
 
     async def update(self, item: dict) -> None:

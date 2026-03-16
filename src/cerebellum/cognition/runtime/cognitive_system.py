@@ -59,7 +59,7 @@ class CognitiveSystem:
         # 1. Perception
         perception = await self.perception.perceive(input_data)
         # Merge environment state so attention has access to the full world context
-        perception["env"] = env_state
+        perception.normalized["env"] = env_state
 
         # 2. Attention — filter what is relevant from perception + memory
         focused = await self.attention.select(perception, self.memory)
@@ -68,10 +68,11 @@ class CognitiveSystem:
         goal = await self.controller.interpret(focused)
 
         # 4. Memory retrieval — past experiences to enrich planning
-        context = await self.memory["episodic"].recall(goal["goal"])
+        # Assume episodic is present. The Memory interface might not have recall directly.
+        context = await self.memory["episodic"].retrieve(goal["goal"])
 
         # 5. Planning
-        plan = await self.planner.create_plan(goal, context)
+        plan = await self.planner.create_plan(context=context, goal=goal)
 
         # 6. Reasoning
         error = None
@@ -116,7 +117,7 @@ class CognitiveSystem:
                 self.metrics.increment("errors")
 
         # 8. Store episodic memory
-        await self.memory["episodic"].store_event({
+        await self.memory["episodic"].store("event", {
             "goal": goal,
             "result": result
         })
