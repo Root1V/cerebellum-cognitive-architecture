@@ -22,6 +22,7 @@
 #                  (historial + resultado previo) y decide el siguiente paso,
 #                  permitiendo corrección de curso y auto-evaluación.
 
+from typing import Any
 from ..core.reasoning import Reasoner
 from ..core.memory import Memory
 from ...tools.tool import Tool
@@ -57,10 +58,10 @@ class LoopReasoner(Reasoner):
 
     async def execute(
         self,
-        goal,
+        plan: Plan,
         memory: dict[str, Memory],
         tools: dict[str, Tool],
-    ) -> list:
+    ) -> Any:
         """
         Ejecuta el ciclo de razonamiento.
 
@@ -70,8 +71,8 @@ class LoopReasoner(Reasoner):
         memory : sistema de memoria disponible.
         tools  : herramientas disponibles (dict nombre→Tool o lista).
         """
-        state = {
-            "goal": goal,
+        state: dict[str, Any] = {
+            "goal": plan,
             "history": [],
             "iteration": 0,
         }
@@ -102,7 +103,7 @@ class LoopReasoner(Reasoner):
     # Núcleo del loop
     # ------------------------------------------------------------------
 
-    async def _think(self, state: dict, memory: Memory, tools) -> dict | str:
+    async def _think(self, state: dict, memory: dict[str, Memory], tools) -> dict | str:
         """
         Decide el siguiente paso consumiendo el plan del Planner en orden.
 
@@ -130,7 +131,7 @@ class LoopReasoner(Reasoner):
         # Plan agotado o no estructurado — el loop termina
         return "done"
 
-    async def _invoke(self, action: dict | str, memory: Memory, tools) -> str | None:
+    async def _invoke(self, action: dict | str, memory: dict[str, Memory], tools) -> Any:
         """
         Uso COGNITIVO de tools: recopila datos que alimentan la próxima iteración.
 

@@ -1,4 +1,5 @@
 from ..core.planner import Planner
+from ..core.models import Plan, PlanStep
 from ...tools.tool import Tool
 
 
@@ -18,12 +19,12 @@ class SimplePlanner(Planner):
     def __init__(self, tools: dict[str, Tool] | None = None):
         self.tools: dict[str, Tool] = tools or {}
 
-    async def create_plan(self, goal: dict, context: list | None = None) -> list[dict]:
+    async def create_plan(self, goal: dict, context: list | None = None) -> Plan:
         if self.tools:
-            return [
-                {"step": i + 1, "action": name, "goal": goal}
+            return Plan(steps=[
+                PlanStep(step=i + 1, action=name, goal=str(goal))
                 for i, name in enumerate(self.tools)
-            ]
+            ])
 
         # Sin tools: un único paso genérico que el reasoner puede delegar al LLM
-        return [{"step": 1, "action": "process", "goal": goal}]
+        return Plan(steps=[PlanStep(step=1, action="process", goal=str(goal))])

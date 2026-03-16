@@ -1,6 +1,6 @@
 from ..core.models import NeuralInterpretation
 from ..neural.neural import NeuralEngine
-from ...infraestructure.llm.llm import LLMClient
+from ...infraestructure.llm.llm_client import LLMClient
 
 _SYSTEM_PROMPT = (
     "You are a perception module in a cognitive AI architecture.\n"
@@ -21,8 +21,10 @@ class LLMNeuralEngine(NeuralEngine):
         self._llm = llm_client
 
     async def interpret(self, text: str) -> NeuralInterpretation:
-        return await self._llm.think(
+        result = await self._llm.think(
             prompt=f'Interpret this input: "{text}"',
             context=_SYSTEM_PROMPT,
             output_model=NeuralInterpretation,
         )
+        assert isinstance(result, NeuralInterpretation)
+        return result

@@ -11,6 +11,7 @@ from ...infraestructure.storage.db_memory import MemoryStorage
 from ...infraestructure.storage.db_episodic import MemoryEpisodicStorage
 from ...infraestructure.llm.embedding import Embedding
 from ...infraestructure.llm.embedd_client import EmbeddingClient
+from typing import Optional
 from ..core.memory import Memory
 
 from pydantic import Field
@@ -50,7 +51,11 @@ class EpisodicMemory(Memory):
         - recent(limit): devuelve los últimos eventos.
     """
 
-    def __init__(self, embedding: Embedding = None, storage: MemoryStorage = None):
+    def __init__(
+        self,
+        embedding: Optional[Embedding] = None,
+        storage: Optional[MemoryStorage] = None,
+    ):
         self._events: list[EventMemory] = []
         self._semantic: Embedding = embedding or EmbeddingClient()
         self._storage: MemoryStorage = storage or MemoryEpisodicStorage()

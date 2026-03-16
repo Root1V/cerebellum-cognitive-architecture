@@ -15,7 +15,7 @@ from typing import Any
 class Action(ABC):
 
     @abstractmethod
-    async def execute(self, task: dict) -> Any:
+    async def execute(self, task: Any) -> Any:
         """
         Execute action in environment.
         """

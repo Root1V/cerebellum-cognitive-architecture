@@ -7,20 +7,21 @@ import asyncio
 from typing import List
 
 from dotenv import load_dotenv
-load_dotenv()
 
-from cerebellum.cognition.perception import TextPerception
-from cerebellum.infraestructure.llm.llm_client import LLMClient
+from cerebellum.cognition.core.models import Fact
 from cerebellum.cognition.neural.llm_neural import LLMNeuralEngine
+from cerebellum.cognition.perception import TextPerception
 from cerebellum.cognition.symbolic import (
+    Constraint,
+    DeclarativeConstraintEngine,
     DeclarativeRuleEngine,
+    LLMConstraintCompiler,
     LLMRuleCompiler,
     Rule,
-    DeclarativeConstraintEngine,
-    LLMConstraintCompiler,
-    Constraint,
 )
-from cerebellum.cognition.core.models import Fact
+from cerebellum.infraestructure.llm.llm_client import LLMClient
+
+load_dotenv()
 
 
 

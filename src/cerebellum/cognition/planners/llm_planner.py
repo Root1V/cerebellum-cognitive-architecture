@@ -24,11 +24,13 @@ class LLMPlanner(Planner):
 
     async def create_plan(self, goal, context=None) -> Plan:
         if self.llm is not None:
-            return await self.llm.think(
+            plan = await self.llm.think(
                 prompt=f"Break this goal into ordered steps: {goal}",
                 context="You are a planning assistant. Break goals into clear ordered steps.",
                 output_model=Plan,
             )
+            assert isinstance(plan, Plan)
+            return plan
 
         # Default plan cuando no hay LLM configurado
         return Plan(steps=[
