@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.1.1](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.1.0...v0.1.1) (2026-03-16)
+
+
+### Bug Fixes
+
+* correcciones en github agents y prompts ([11534c9](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/11534c904c41d4f853a99cd4d975efdf41f29001))
+* install bandit[sarif] extra and update codeql-action to v4 ([e0a3835](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/e0a3835b23b3360ff8c8d05e980c94c19327ae5b))
+* reformat github agents markdown to follow best practices ([4354add](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/4354adde9c2a83fe9aa04e4d184cbb26d8948673))
+* remove unused imports in db_episodic.py ([5a27e1a](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/5a27e1a37d36248ddd4a88bc602509a07ef555d7))
+* resolve all mypy type-checking errors in src directory ([fe3dd57](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/fe3dd5750c7ee02217354c56ad696a7c178245b1))
+
+
+### Documentation
+
+* deeply improve AGENTS.md globally for human and AI agents ([675cae0](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/675cae081b48bab50107c582f186281296b3ed2a))
+* deeply improve architecture and coding instructions for copilot ([1615258](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/1615258e6b53bbeb1069b576da689b589cc200f1))
+* enhance github copilot instructions, prompts and skills ([73bebfc](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/73bebfcdff57306818e85673f23063f5b15881c7))
+* enrich copilot-instructions.md with cerebellum-specific context and rules ([e20b36d](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/e20b36dbc320d05388389cf27f97628843c6e2b6))
+
 ## 0.1.0 (2026-03-15)
 
 
