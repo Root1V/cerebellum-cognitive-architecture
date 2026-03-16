@@ -6,8 +6,7 @@ siguiendo el modelo async del resto de la arquitectura cognitiva.
 """
 
 import logging
-import uuid
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.http.models import (
