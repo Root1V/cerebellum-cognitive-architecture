@@ -32,7 +32,7 @@ class SemanticMemory(Memory):
     def __init__(self):
         self.knowledge: dict[str, Any] = {}
 
-    async def store(self, key: str, value) -> None:
+    async def store(self, key: str, value: Any) -> None:
         self.knowledge[key] = value
 
     async def retrieve(self, query: str) -> Any:

@@ -8,7 +8,7 @@ prompt, pide JSON al LLM y valida la respuesta con Pydantic antes de retornarla.
 import json
 import logging
 
-from axonium import LlamaAdapter
+from axonium import LlamaAdapter  # type: ignore[import-untyped]
 from pydantic import BaseModel
 
 from .llm import LLM

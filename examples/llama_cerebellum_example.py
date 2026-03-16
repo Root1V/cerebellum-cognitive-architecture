@@ -12,12 +12,12 @@ import asyncio
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
-
-from cerebellum.infraestructure import LLMClient
 from cerebellum.cognition import LLMPlanner
 from cerebellum.cognition import LLMReasoner
+from cerebellum.infraestructure import LLMClient
+
+load_dotenv()
+
 
 
 

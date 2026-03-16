@@ -6,7 +6,7 @@ siguiendo el modelo async del resto de la arquitectura cognitiva.
 """
 
 import logging
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.http.models import (
@@ -145,7 +145,7 @@ class MemoryEpisodicStorage(MemoryStorage):
                 ]
             )
 
-        results = await self._client.search(
+        results = await self._client.search(  # type: ignore[attr-defined]
             collection_name=self._collection_name,
             query_vector=query_vector,
             limit=top_k,
@@ -154,7 +154,7 @@ class MemoryEpisodicStorage(MemoryStorage):
         logger.debug("Búsqueda completada: top_k=%d resultados=%d", top_k, len(results))
         return results
 
-    async def get_memory_by_id(self, memory_id: str) -> Optional[PointStruct]:
+    async def get_memory_by_id(self, memory_id: str) -> Optional[Any]:
         """
         Recupera un evento episódico por su identificador único.
 

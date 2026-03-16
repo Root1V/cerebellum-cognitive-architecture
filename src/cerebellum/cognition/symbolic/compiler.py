@@ -19,7 +19,7 @@ from typing import Generic, List, Optional, Type, TypeVar
 
 from pydantic import BaseModel
 
-from ...infraestructure.llm.llm import LLMClient
+from ...infraestructure.llm.llm_client import LLMClient
 from ..core.models import Fact
 from .constraints import Constraint
 from .rules import Rule
@@ -132,11 +132,13 @@ class LLMSymbolicCompiler(ABC, Generic[T]):
                 + schema_lines
             )
 
-        return await self._llm.think(
+        from typing import cast
+        result = await self._llm.think(
             prompt=prompt,
             context=self._system_prompt,
             output_model=self._output_model,
         )
+        return cast(T, result)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

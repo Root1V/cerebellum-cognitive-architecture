@@ -43,7 +43,7 @@ class EmbeddingClient(Embedding):
         -------
         Un vector numérico (embedding) que representa el significado semántico del texto.
         """
-        vectors = self._model.encode(text)
+        vectors = self._model.encode(text or "")
         logger.info("Embedding generado para texto=%s", text)
         logger.debug("Vector embedding: %s", vectors[:5])
         

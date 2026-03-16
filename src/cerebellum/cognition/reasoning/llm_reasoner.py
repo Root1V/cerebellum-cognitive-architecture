@@ -4,6 +4,7 @@ from ..core.reasoning import Reasoner
 from ..core.memory import Memory
 from ...tools.tool import Tool
 from ...infraestructure.llm.llm import LLM
+from typing import Any
 from ..planners import Plan, PlanStep
 
 
@@ -27,7 +28,7 @@ class LLMReasoner(Reasoner):
         plan: Plan,
         memory: dict[str, Memory],
         tools: dict[str, Tool],
-    ) -> list:
+    ) -> Any:
         results = []
         for step in plan.steps:
             result = await self.solve(step, memory, tools)

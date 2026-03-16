@@ -4,9 +4,10 @@
 # a unidades simples que se pueden responder directamente.
 
 from ..core.reasoning import Reasoner
+from typing import Any
 from ..core.memory import Memory
 from ...tools.tool import Tool
-from ..planners import Plan, PlanStep
+from ..planners import Plan
 
 
 class RecursiveReasoner(Reasoner):
@@ -30,7 +31,7 @@ class RecursiveReasoner(Reasoner):
         plan: Plan,
         memory: dict[str, Memory],
         tools: dict[str, Tool],
-    ) -> list:
+    ) -> Any:
         """
         Ejecuta cada paso del plan como un subproblema independiente.
         """
