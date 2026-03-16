@@ -1,4 +1,5 @@
 name: semantic-version
+run-name: "Release & Notes Generation - ${{ github.ref_name }}"
 
 on:
   push:
