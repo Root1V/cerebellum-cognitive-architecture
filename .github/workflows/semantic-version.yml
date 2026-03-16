@@ -98,14 +98,27 @@ jobs:
               max_tokens: 512
             }')
 
-          # -f hace que curl falle con código ≠0 si la API devuelve un error HTTP
-          RESPONSE=$(curl -f -s \
+          # Quitamos -f para poder ver el error real de la API en el log si falla
+          RESPONSE=$(curl -s \
             https://api.openai.com/v1/chat/completions \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $OPENAI_API_KEY" \
             -d "$PAYLOAD")
 
-          SUMMARY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
+          # Validar si hubo error en la respuesta de OpenAI
+          ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error.message // empty')
+          if [ -n "$ERROR_MSG" ]; then
+            echo "Error de la API de OpenAI: $ERROR_MSG"
+            exit 1
+          fi
+
+          SUMMARY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // empty')
+
+          if [ -z "$SUMMARY" ] || [ "$SUMMARY" == "null" ]; then
+            echo "Error: No se pudo generar el resumen. Respuesta completa:"
+            echo "$RESPONSE"
+            exit 1
+          fi
 
           echo "Notas de release generadas por LLM:"
           echo "$SUMMARY"
