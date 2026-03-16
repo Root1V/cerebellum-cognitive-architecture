@@ -33,7 +33,7 @@ jobs:
         uses: googleapis/release-please-action@v4
         with:
           release-type: python
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
 
   gen-release-notes:
     needs: release-please
@@ -74,7 +74,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           TAG: ${{ needs.release-please.outputs.tag_name }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
         run: |
           echo "Generando notas de release con OpenAI..."
           COMMITS_JSON=$(jq -Rs . < commits.txt)
