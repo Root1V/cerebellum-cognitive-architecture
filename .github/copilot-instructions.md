@@ -28,3 +28,13 @@ When generating or refactoring code for this project, you must adhere strictly t
 - **No Print Statements**: Use Python's built-in `logging` module (`logger = logging.getLogger("cerebellum.module")`) for observability.
 - **Small Modules**: Keep classes and functions small and composable following SOLID principles.
 - Format code elegantly, avoiding deep nesting where possible.
+
+## 6. Development Workflow & Branching
+- **Base Branch**: Always work from the `develop` branch. Never branch directly from `main`.
+- **Naming Convention**: 
+  - `feat/feature-name` for new capabilities.
+  - `fix/bug-name` for fixes.
+- **Merge Circuit**: 
+  1. Working Branch -> `develop`.
+  2. `develop` -> `main` (only after integration is stable).
+- **Automation**: Do not manually update versions in `pyproject.toml`. The `release-please` automation handles versioning and changelogs on the `main` branch.

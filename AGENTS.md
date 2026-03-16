@@ -43,6 +43,17 @@ Any AI or Human submitting a Pull Request MUST adhere to the following:
 
 ---
 
+## 🌿 Git Flow & Branching Strategy
+We use a structured branching model to maintain stability:
+1. **`main`**: Production-ready code. Only modified via automated Release PRs.
+2. **`develop`**: The integration branch. All feature branches start from here and merge back here.
+3. **`feat/*` & `fix/*`**: Working branches. Always created relative to `develop`.
+4. **Releases**: Managed by `release-please`. Merging `develop` into `main` triggers an automated Release PR. Merging that PR generates the tag and Docker image.
+
+**Cleanup Rule:** Head branches are automatically deleted upon successful merge to keep the repo clean.
+
+---
+
 ## 🚀 Running the Project (Dev Setup)
 
 **1. Install UV (The modern Python package manager):**
