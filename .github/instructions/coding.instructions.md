@@ -1,33 +1,36 @@
 # Coding Rules
 
-Language: Python
+**Language:** Python 3.13+
 
-Rules:
+## Rules
+- **Async-First:** All asynchronous IO must use `async`/`await`.
+- **Loose Coupling:** Modules must not depend directly on concrete implementations of other major components.
+- **Type Checking:** All methods and functions require strict Python type hints validating against `mypy` without `Any` overrides when possible.
 
-- async-first programming
-- all IO must be async
-- modules must be loosely coupled
+## Structure
+The source code organizes into `cognition` (brain logic) and `infrastructure` (connections to the outside world):
 
-Structure:
-
+```text
 src/
-    cerebellum/
-      cognition/
-        perception/
-        attention/
-        core/
-        learning/
-        memory/
-        reasoning/
-        planners/
-        action/
-        runtime/
-      infrastructure/
-        llm/
-        observability/
-        storage/
-        security/
+└── cerebellum/
+    ├── cognition/
+    │   ├── action/
+    │   ├── attention/
+    │   ├── core/
+    │   ├── learning/
+    │   ├── memory/
+    │   ├── perception/
+    │   ├── planners/
+    │   ├── reasoning/
+    │   └── runtime/
+    └── infrastructure/
+        ├── llm/
+        ├── observability/
+        ├── security/
+        └── storage/
+```
 
-Logging:
-
-Use structured logging.
+## Logging
+- Never use basic `print()`.
+- Use structured logging via the standard `logging` library.
+- Configure loggers using `logging.getLogger("cerebellum.module")`.

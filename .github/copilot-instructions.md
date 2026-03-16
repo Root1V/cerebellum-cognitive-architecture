@@ -2,26 +2,23 @@
 
 When writing code for this project:
 
-Always:
+## Always
+- Use best practice and enterprise practice
+- Use Python async/await
+- Use strict type hints (`mypy` compliant)
+- Follow modular architecture
+- Create small composable modules
 
-- use best practice and enterprise practice
-- use Python async/await
-- use type hints
-- follow modular architecture
-- create small composable modules
+## Avoid
+- Synchronous network calls
+- Blocking IO operations
+- Tight coupling between modules
 
-Avoid:
+## When creating cognitive components
+- Always connect to the `EventBus`
+- Never call other modules directly (use the message bus)
 
-- synchronous network calls
-- blocking IO
-- tight coupling between modules
-
-When creating cognitive components:
-
-- always connect to the EventBus
-- never call other modules directly
-
-When writing tests:
-
-- use pytest
-- test async functions
+## When writing tests
+- Use `pytest`
+- Use `@pytest.mark.asyncio` to test async functions
+- Mock external dependencies (`Qdrant`, LLMs, etc.)
