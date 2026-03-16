@@ -105,20 +105,20 @@ jobs:
             -H "Authorization: Bearer $OPENAI_API_KEY" \
             -d "$PAYLOAD")
 
-          # Validar si hubo error en la respuesta de OpenAI
-          ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error.message // empty')
-          SUMMARY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // empty')
+          # Validar si hubo error en la respuesta de OpenAI o si está vacía
+          ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error.message // empty' 2>/dev/null || echo "Error de formato JSON o Red")
+          SUMMARY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // empty' 2>/dev/null || echo "")
 
-          if [ -n "$ERROR_MSG" ] || [ -z "$SUMMARY" ] || [ "$SUMMARY" == "null" ]; then
-            echo "⚠️ Advertencia: No se pudo generar el resumen con IA. Usando notas por defecto."
-            echo "Error detectado: ${ERROR_MSG:-'Respuesta vacía'}"
-            SUMMARY="## Notas de Release\n\nNotas generadas automáticamente. Para ver los detalles completos, consulta el historial de commits."
+          if [ -n "$ERROR_MSG" ] && [ "$ERROR_MSG" != "null" ] || [ -z "$SUMMARY" ] || [ "$SUMMARY" == "null" ]; then
+            echo "⚠️ Advertencia: No se pudo generar el resumen con IA. Se mantendrán las notas originales."
+            echo "Detalle: ${ERROR_MSG:-'Respuesta vacía'}"
+            # No fallamos el job (exit 0) para que el pipeline continúe
+            exit 0
           fi
 
           echo "$SUMMARY" > release_notes.md
-
-          echo "Notas de release a aplicar:"
+          echo "Notas de release generadas por IA:"
           cat release_notes.md
 
-          # Persistir las notas. Si falla este paso (ej. por permisos de GH), el job sigue.
+          # Solo editamos si tenemos contenido válido
           gh release edit "$TAG" --notes-file release_notes.md || echo "No se pudo actualizar la descripción del release."
