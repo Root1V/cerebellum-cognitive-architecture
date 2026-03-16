@@ -65,15 +65,24 @@ def _matches(fact_value: Any, op: str, expected: Any) -> bool:
         return False
     if op not in ("in", "not_in", "contains"):
         expected = _coerce(fact_value, expected)
-    if op == "==":       return fact_value == expected
-    if op == "!=":       return fact_value != expected
-    if op == ">": 	     return fact_value > expected
-    if op == ">=":       return fact_value >= expected
-    if op == "<":        return fact_value < expected
-    if op == "<=":       return fact_value <= expected
-    if op == "in":       return fact_value in expected        # fact is a member of a collection
-    if op == "not_in":   return fact_value not in expected
-    if op == "contains": return expected in fact_value        # fact string contains a substring
+    if op == "==":
+        return fact_value == expected
+    if op == "!=":
+        return fact_value != expected
+    if op == ">":
+        return fact_value > expected
+    if op == ">=":
+        return fact_value >= expected
+    if op == "<":
+        return fact_value < expected
+    if op == "<=":
+        return fact_value <= expected
+    if op == "in":
+        return fact_value in expected        # fact is a member of a collection
+    if op == "not_in":
+        return fact_value not in expected
+    if op == "contains":
+        return expected in fact_value        # fact string contains a substring
     return False
 
 

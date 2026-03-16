@@ -4,7 +4,6 @@ Todos los tests usan mocks para evitar dependencias externas (Qdrant, etc).
 """
 
 import pytest
-import asyncio
 from unittest.mock import patch, AsyncMock
 from cerebellum.cognition.memory.manager import MemoryManager
 from cerebellum.cognition.memory.working_memory import WorkingMemory

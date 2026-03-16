@@ -6,7 +6,7 @@
 from ..core.reasoning import Reasoner
 from ..core.memory import Memory
 from ...tools.tool import Tool
-from ..planners import Plan, PlanStep
+from ..planners import Plan
 
 
 class RecursiveReasoner(Reasoner):
