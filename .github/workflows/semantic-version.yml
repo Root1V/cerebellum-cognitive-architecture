@@ -107,23 +107,18 @@ jobs:
 
           # Validar si hubo error en la respuesta de OpenAI
           ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error.message // empty')
-          if [ -n "$ERROR_MSG" ]; then
-            echo "Error de la API de OpenAI: $ERROR_MSG"
-            exit 1
-          fi
-
           SUMMARY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // empty')
 
-          if [ -z "$SUMMARY" ] || [ "$SUMMARY" == "null" ]; then
-            echo "Error: No se pudo generar el resumen. Respuesta completa:"
-            echo "$RESPONSE"
-            exit 1
+          if [ -n "$ERROR_MSG" ] || [ -z "$SUMMARY" ] || [ "$SUMMARY" == "null" ]; then
+            echo "⚠️ Advertencia: No se pudo generar el resumen con IA. Usando notas por defecto."
+            echo "Error detectado: ${ERROR_MSG:-'Respuesta vacía'}"
+            SUMMARY="## Notas de Release\n\nNotas generadas automáticamente. Para ver los detalles completos, consulta el historial de commits."
           fi
 
           echo "$SUMMARY" > release_notes.md
 
-          echo "Notas de release generadas por LLM:"
+          echo "Notas de release a aplicar:"
           cat release_notes.md
 
-          # Persistir las notas en el release de GitHub usando un archivo para evitar problemas de escape
-          gh release edit "$TAG" --notes-file release_notes.md
+          # Persistir las notas. Si falla este paso (ej. por permisos de GH), el job sigue.
+          gh release edit "$TAG" --notes-file release_notes.md || echo "No se pudo actualizar la descripción del release."
