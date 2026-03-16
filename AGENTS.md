@@ -1,75 +1,77 @@
-# AGENTS.md
+# Cerebellum - AI Agent & Developer Guidelines (AGENTS.md)
 
-## Project Overview
+This file (`AGENTS.md`) serves as the foundational rulebook for all human contributors, AI pair programmers (Cursor, Cline, Aider, etc.), and Autonomous Agents operating on the `cerebellum` codebase.
 
-This project implements a cognitive system inspired by neuroscience.
+## 🧠 Project Overview
+**Cerebellum** is a distributed, asynchronous, event-driven cognitive architecture heavily inspired by human neuroscience. We are building the brain of a digital entity.
 
-The system is built as a distributed asynchronous event-driven architecture.
+**Core Design Principles:**
+1. **Asynchronous Execution:** The brain never sleeps, and neither does IO. 
+2. **Event-Driven Communication:** Synapses fire without waiting.
+3. **Modular Cognitive Components:** Decoupled, specialized neuro-lobes.
+4. **High Parallelism:** Thinking and perceiving happen concurrently.
 
-Core design principles:
+---
 
-- asynchronous execution
-- event driven communication
-- modular cognitive components
-- high parallelism
+## 🏗 Cognitive Subsystems
+Our "brain logic" lives in `src/cerebellum/cognition/` and is divided into distinct domains. **No module can instantiate or directly call another.**
+1. **Perception**: Extracts structured reality (`PerceptionResult`) from raw inputs (text, vision).
+2. **Attention**: Filters the avalanche of perceptions and memories to extract exactly what matters *right now*.
+3. **Memory**: Working (volatile), Episodic (vector DBs/Qdrant), and Semantic stores. It remembers but **never executes**.
+4. **Reasoning/Planning**: The prefrontal cortex. Uses LLMs (via `axonium`) to evaluate goals and generate formal `Plan` objects.
+5. **Action**: The motor cortex. Takes a `Plan` and produces side-effects in the real world (API calls, physical actuators).
+6. **Learning**: Evaluates Action outcomes against expectations to optimize future planning.
 
-## Cognitive modules
+---
 
-The system contains the following cognitive subsystems:
+## 🛠 Technology Stack
+* **Language:** Python 3.13+
+* **Concurrency:** `asyncio`
+* **Data Validation:** `pydantic`
+* **APIs / System Orchestration:** `fastapi`
+* **Vector Storage:** `qdrant-client` (Async mode exclusively)
+* **LLM Engine:** `axonium` (Our custom SDK for local/server inference)
 
-1. Perception
-2. Attention
-3. Memory
-4. Reasoning
-5. Planning
-6. Action
-7. Learning
+---
 
-Each subsystem communicates through the Event Bus.
+## ⚖️ Immutable Architecture Rules
+Any AI or Human submitting a Pull Request MUST adhere to the following:
+1. **Async-First:** Absolutely NO synchronous network calls (`requests`. `urllib`) or blocking sleep (`time.sleep`).
+2. **EventBus Dependency:** All cross-module chatter happens over the Event Bus. **Zero direct method invocation between sibling cognitive lobes.**
+3. **Strict Typing:** All code must pass `mypy src` with 0 errors. Avoid `Any` in favor of `pydantic` base models.
+4. **Clean Testing:** Tests live in `tests/unit` and `tests/integration`. Use `@pytest.mark.asyncio`. NEVER hit external systems (LLMs, DBs) during unit tests; always patch and `AsyncMock` them.
 
-## Development stack
+---
 
-Language:
-Python 3.13
+## 🚀 Running the Project (Dev Setup)
 
-Core libraries:
+**1. Install UV (The modern Python package manager):**
+```bash
+pip install uv
+```
 
-- asyncio
-- fastapi
-- pydantic
-- qdrant
+**2. Install our custom LLM SDK (axonium):**
+```bash
+uv pip install --system git+https://github.com/Root1V/axonium-sdk.git@main
+```
 
-## Architecture rules
+**3. Install Project Dependencies:**
+```bash
+uv pip install --system -e .[dev]
+```
 
-All cognitive modules:
+**4. Run Tests:**
+```bash
+uv run pytest tests/ -v
+```
 
-- must be asynchronous
-- communicate through the EventBus
-- must not call other modules directly
+**5. Check Types & Linting:**
+```bash
+uv run mypy src
+uv run ruff check .
+```
 
-## Running the project
-
-### Install UV:
-
-- pip install uv
-
-### Instalar axonium (SDK propio) desde repo público
-- uv pip install --system git+https://github.com/Root1V/axonium-sdk.git@main
-
-### Install dependencies with uv
-- uv pip install --system -e .[dev]
-
-Run system:
-
-python main.py
-
-## Testing
-
-pytest tests/
-
-## Code guidelines
-
-- use type hints
-- avoid blocking IO
-- keep modules small
-- log all events
+**6. Start the System:**
+```bash
+uv run python main.py
+```
