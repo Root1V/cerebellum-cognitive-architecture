@@ -1,4 +1,5 @@
 name: Integration-Tests
+run-name: "Integration Tests - ${{ github.ref_name }}"
 
 on:
   push:
