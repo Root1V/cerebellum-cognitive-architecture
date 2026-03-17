@@ -2,8 +2,8 @@
 Perception implementations: text, multimodal, etc.
 """
 
-from .text_perception import TextPerception
+from .text_perception import TextPerceptionModule
 
 __all__ = [
-    "TextPerception",
+    "TextPerceptionModule",
 ]
