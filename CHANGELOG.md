@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.0](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.1.3...v0.2.0) (2026-03-17)
+
+
+### Features
+
+* implement message-driven choreography and working memory refactor ([0938449](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/09384499b3acb9ba5b2539a050951d5f06d5ad02))
+* implement message-driven cognitive runtime and refactor working memory ([43dd070](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/43dd0704057ac5cb73f7b49d963a9e0d6a498fe7))
+* refactor episodic memory as a message-driven cognitive module ([1289331](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/12893317e0bbec3722c7b67ef98d9ab8d45da26e))
+* refactor episodic memory as a message-driven cognitive module ([0545627](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/05456275aab7799bfeb66ec7a906e759553b5c9d))
+* refactor semantic memory as a message-driven cognitive module ([c48c7b1](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/c48c7b177afac994b291952cff37bce04cb73924))
+* refactor semantic memory as a message-driven cognitive module ([956aab4](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/956aab40ddb655d8fc1da755c0a299d6f23016e6))
+
+
+### Documentation
+
+* document branching strategy and development workflow in AGENTS.md and copilot-instructions ([d580bc9](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/d580bc915f066acbfce1cee36561b50079e4a558))
+* establish Event-Driven Choreography as core architectural principle ([5e8feaa](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/5e8feaa9e807a73ca61e8ae1fd37db4142363caf))
+
 ## [0.1.3](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.1.2...v0.1.3) (2026-03-16)
 
 
