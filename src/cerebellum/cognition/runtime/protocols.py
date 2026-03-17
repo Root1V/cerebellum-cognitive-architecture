@@ -9,9 +9,15 @@ class MemoryStorePayload(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 class MemoryRecallPayload(BaseModel):
-    """Payload para pedir recuperar algo por clave."""
+    """Payload para pedir recuperar algo por clave exacto."""
     scope: Literal["working", "episodic", "semantic"]
     key: str
+
+class MemorySearchPayload(BaseModel):
+    """Payload para búsqueda semántica/similitud (habitual en Episodic)."""
+    query: str
+    limit: int = 5
+    metadata_filter: Dict[str, Any] = Field(default_factory=dict)
 
 class MemoryAvailablePayload(BaseModel):
     """Payload con el resultado de una recuperación de memoria."""
