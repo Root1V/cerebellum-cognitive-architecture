@@ -1,111 +1,157 @@
-# memory/episodic_memory.py
-
-import datetime
 import logging
-from typing import Any
 import uuid
+from datetime import datetime
+from typing import Any, Dict, Optional
 
-from pydantic import BaseModel
+from cerebellum.cognition.runtime.cognitive_runtime import CognitiveModule
+from cerebellum.cognition.runtime.types import Message, CognitiveContext
+from cerebellum.cognition.runtime.protocols import (
+    MemoryStorePayload,
+    MemoryRecallPayload,
+    MemorySearchPayload,
+    MemoryAvailablePayload
+)
 
 from ...infraestructure.storage.db_memory import MemoryStorage
 from ...infraestructure.storage.db_episodic import MemoryEpisodicStorage
 from ...infraestructure.llm.embedding import Embedding
 from ...infraestructure.llm.embedd_client import EmbeddingClient
-from typing import Optional
-from ..core.memory import Memory
 
-from pydantic import Field
+logger = logging.getLogger("cerebellum.cognition.memory.episodic")
 
-class EventMemory(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    payload: dict
-    vector: list[float]
-    timestamp: str = Field(default_factory=lambda: datetime.datetime.now().isoformat())
-    
-    def __str__(self):
-        return f"EventMemory(id={self.id}, payload={self.payload}, vector={self.vector[:3]}..., timestamp={self.timestamp})"
-
-
-class EpisodicMemory(Memory):
+class EpisodicMemory(CognitiveModule):
     """
-    EpisodicMemory
-    --------------
-    Memoria episódica cognitiva.
-
-    Objetivo funcional:
-        - Almacenar experiencias pasadas de eventos, acciones y resultados.
-        - Permite recordar, analizar y consultar el historial de interacciones o situaciones vividas por el agente.
-        - Simula un "diario" cognitivo: registro cronológico de lo que ocurrió, cuándo y cómo.
-
-    Uso típico:
-        - Guardar eventos relevantes (tareas, resultados, decisiones, contextos).
-        - Recuperar eventos por consulta (query) para aprender, razonar o explicar comportamientos.
-        - Consultar los eventos más recientes para mantener contexto histórico.
-
-    Métodos:
-        - store(key, value): almacena un evento simple.
-        - update(item): almacena un evento complejo (dict).
-        - retrieve(query): recupera eventos que coinciden con la consulta.
-        - store_event(event): alias semántico de update.
-        - recall(query): alias semántico de retrieve.
-        - recent(limit): devuelve los últimos eventos.
+    EpisodicMemory (Memoria Episódica)
+    ---------------------------------
+    Módulo cognitivo que almacena experiencias pasadas (eventos).
+    Utiliza almacenamiento vectorial (Qdrant) para permitir búsqueda por similitud.
+    
+    Tópicos que escucha:
+      - 'memory.store' (si scope == 'episodic')
+      - 'memory.recall' (si scope == 'episodic')
+      - 'memory.search' (búsqueda semántica)
     """
 
     def __init__(
-        self,
+        self, 
+        name: str = "memory.episodic",
         embedding: Optional[Embedding] = None,
-        storage: Optional[MemoryStorage] = None,
+        storage: Optional[MemoryStorage] = None
     ):
-        self._events: list[EventMemory] = []
+        super().__init__(name)
+        self.subscriptions += ["memory.store", "memory.recall", "memory.search"]
         self._semantic: Embedding = embedding or EmbeddingClient()
         self._storage: MemoryStorage = storage or MemoryEpisodicStorage()
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._initialized = False
 
-    async def initialize(self) -> None:
-        """
-        Inicializa el backend de almacenamiento.
+    async def on_start(self, context: CognitiveContext) -> None:
+        """Inicializa el storage al arrancar el módulo."""
+        if not self._initialized:
+            logger.info("Initializing Episodic Memory storage...")
+            await self._storage.initialize()
+            self._initialized = True
 
-        Debe llamarse antes de usar la memoria episódica para garantizar
-        que la colección Qdrant existe y está lista para operar.
+    async def on_message(self, message: Message, context: CognitiveContext) -> None:
+        """Handler principal de mensajes episódicos."""
+        if message.topic == "memory.store":
+            await self._handle_store(message)
+        elif message.topic == "memory.recall":
+            await self._handle_recall(message)
+        elif message.topic == "memory.search":
+            await self._handle_search(message)
 
-        Example::
+    async def _event_to_text(self, payload: Dict[str, Any]) -> str:
+        """Convierte un payload a texto para generar el embedding."""
+        # Estrategia simple por ahora: concatenar claves y valores
+        return ", ".join(f"{k}: {v}" for k, v in payload.items())
 
-            memory = EpisodicMemory()
-            await memory.initialize()
-        """
-        await self._storage.initialize()
+    async def _handle_store(self, message: Message) -> None:
+        try:
+            payload = MemoryStorePayload(**message.payload)
+            if payload.scope == "episodic":
+                # 1. Generar texto representativo
+                text = await self._event_to_text(payload.value if isinstance(payload.value, dict) else {"content": payload.value})
+                
+                # 2. Generar embedding
+                vector = await self._semantic.encode(text)
+                
+                # 3. Guardar en Qdrant
+                # Usamos el key como ID si es un UUID válido, o generamos uno nuevo ligado al mensaje
+                memory_id = payload.key if payload.key else str(uuid.uuid4())
+                
+                # Enriquecemos el payload con metadatos útiles
+                enriched_value = payload.value if isinstance(payload.value, dict) else {"data": payload.value}
+                enriched_value["timestamp"] = enriched_value.get("timestamp", datetime.now().isoformat())
+                enriched_value["_source_msg_id"] = message.id
+                
+                await self._storage.store_memory(memory_id, vector, enriched_value)
+                
+                logger.debug(f"Event stored in episodic memory: {memory_id}")
+                await self.publish("memory.stored", {
+                    "key": memory_id,
+                    "scope": "episodic"
+                }, correlation_id=message.id)
+                
+        except Exception as e:
+            logger.error(f"Error storing in episodic memory: {e}", exc_info=True)
 
-    # --- Memory ABC ---    
-    async def event_to_text(self, event: dict) -> str:
-        return ", ".join(f"{k}: {v}" for k, v in event.items())
-    
-    async def _store(self, event: EventMemory) -> None:
-        text = await self.event_to_text(event.payload)
-        vector = await self._semantic.encode(text)
-        event.vector = vector
+    async def _handle_recall(self, message: Message) -> None:
+        try:
+            payload = MemoryRecallPayload(**message.payload)
+            if payload.scope == "episodic":
+                record = await self._storage.get_memory_by_id(payload.key)
+                
+                found = False
+                data = None
+                if record is not None:
+                    found = True
+                    data = record.payload if hasattr(record, 'payload') else None
+                
+                response = MemoryAvailablePayload(
+                    id=message.id,
+                    data=data,
+                    found=found,
+                    metadata={"source": "episodic", "id": payload.key}
+                )
+                await self.publish("memory.available", response.model_dump())
+        except Exception as e:
+            logger.error(f"Error recalling from episodic memory: {e}", exc_info=True)
 
-        self._logger.debug("Almacenando evento: %s", event)
-        self._events.append(event)
-        await self._storage.store_memory(event.id, vector, event.payload)
-        
-    async def store_event(self, event: dict) -> None:
-        event_memory = EventMemory(payload=event, vector=[])
-        await self._store(event_memory)
-
-    async def store(self, key: str, value) -> None:
-        event = EventMemory(payload={key: value}, vector=[])
-        await self._store(event)
-
-    async def retrieve(self, query: str) -> list[EventMemory]:
-         return [e for e in self._events if query in str(e)]
-    
-    async def recent(self, limit: int = 10) -> list[EventMemory]:
-        return self._events[-limit:]
-    
-    async def update(self, item: Any) -> None:
-        raise NotImplementedError
+    async def _handle_search(self, message: Message) -> None:
+        try:
+            payload = MemorySearchPayload(**message.payload)
+            
+            # 1. Generar vector de la consulta
+            query_vector = await self._semantic.encode(payload.query)
+            
+            # 2. Buscar en Qdrant
+            results = await self._storage.search_memory(
+                query_vector, 
+                top_k=payload.limit,
+                filter_payload=payload.metadata_filter
+            )
+            
+            # 3. Formatear resultados
+            found_data = []
+            for res in results:
+                found_data.append({
+                    "score": res.score,
+                    "payload": res.payload,
+                    "id": res.id
+                })
+            
+            response = MemoryAvailablePayload(
+                id=message.id,
+                data=found_data,
+                found=len(found_data) > 0,
+                metadata={"source": "episodic", "search_query": payload.query}
+            )
+            await self.publish("memory.available", response.model_dump())
+            
+        except Exception as e:
+            logger.error(f"Error searching in episodic memory: {e}", exc_info=True)
 
     @property
     def size(self) -> int:
-        """Devuelve el número de eventos almacenados."""
-        return len(self._events)
+        # Nota: Qdrant no devuelve el tamaño fácilmente sin una llamada asíncrona dedicada
+        return -1 # Deshabilitado para sync property
