@@ -7,9 +7,9 @@ This file (`AGENTS.md`) serves as the foundational rulebook for all human contri
 
 **Core Design Principles:**
 1. **Asynchronous Execution:** The brain never sleeps, and neither does IO. 
-2. **Event-Driven Communication:** Synapses fire without waiting.
+2. **Event-Driven Choreography:** No central orchestrator. Synapses (messages) fire and lobes react independently.
 3. **Modular Cognitive Components:** Decoupled, specialized neuro-lobes.
-4. **High Parallelism:** Thinking and perceiving happen concurrently.
+4. **High Parallelism:** Thinking, perceiving, and remembering happen concurrently.
 
 ---
 
