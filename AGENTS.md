@@ -7,9 +7,9 @@ This file (`AGENTS.md`) serves as the foundational rulebook for all human contri
 
 **Core Design Principles:**
 1. **Asynchronous Execution:** The brain never sleeps, and neither does IO. 
-2. **Event-Driven Communication:** Synapses fire without waiting.
+2. **Event-Driven Choreography:** No central orchestrator. Synapses (messages) fire and lobes react independently.
 3. **Modular Cognitive Components:** Decoupled, specialized neuro-lobes.
-4. **High Parallelism:** Thinking and perceiving happen concurrently.
+4. **High Parallelism:** Thinking, perceiving, and remembering happen concurrently.
 
 ---
 
@@ -40,6 +40,17 @@ Any AI or Human submitting a Pull Request MUST adhere to the following:
 2. **EventBus Dependency:** All cross-module chatter happens over the Event Bus. **Zero direct method invocation between sibling cognitive lobes.**
 3. **Strict Typing:** All code must pass `mypy src` with 0 errors. Avoid `Any` in favor of `pydantic` base models.
 4. **Clean Testing:** Tests live in `tests/unit` and `tests/integration`. Use `@pytest.mark.asyncio`. NEVER hit external systems (LLMs, DBs) during unit tests; always patch and `AsyncMock` them.
+
+---
+
+## 🌿 Git Flow & Branching Strategy
+We use a structured branching model to maintain stability:
+1. **`main`**: Production-ready code. Only modified via automated Release PRs.
+2. **`develop`**: The integration branch. All feature branches start from here and merge back here.
+3. **`feat/*` & `fix/*`**: Working branches. Always created relative to `develop`.
+4. **Releases**: Managed by `release-please`. Merging `develop` into `main` triggers an automated Release PR. Merging that PR generates the tag and Docker image.
+
+**Cleanup Rule:** Head branches are automatically deleted upon successful merge to keep the repo clean.
 
 ---
 
