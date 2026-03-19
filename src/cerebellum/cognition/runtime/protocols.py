@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional, Literal
 from pydantic import BaseModel, Field
-from ..core.models import PerceptionResult
+from ..core.models import PerceptionResult, Plan
 
 class MemoryStorePayload(BaseModel):
     """Payload para pedir guardar algo en memoria."""
@@ -44,6 +44,14 @@ class AttentionOutputPayload(BaseModel):
     """Payload emitido tras filtrar y enfocar la atención."""
     focused_result: PerceptionResult
     relevance_score: float = 1.0
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+# --- Reasoning Protocols ---
+
+class ReasoningOutputPayload(BaseModel):
+    """Payload emitido cuando se ha generado un plan de acción."""
+    plan: Plan
+    goal: str
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 class AttentionSetFocusPayload(BaseModel):
