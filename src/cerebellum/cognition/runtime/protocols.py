@@ -1,6 +1,6 @@
-from typing import Any, Dict, Optional, Literal
+from typing import Any, Dict, Optional, Literal, List
 from pydantic import BaseModel, Field
-from ..core.models import PerceptionResult, Plan
+from ..core.models import PerceptionResult, Plan, ActionResult
 
 class MemoryStorePayload(BaseModel):
     """Payload para pedir guardar algo en memoria."""
@@ -52,6 +52,14 @@ class ReasoningOutputPayload(BaseModel):
     """Payload emitido cuando se ha generado un plan de acción."""
     plan: Plan
     goal: str
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+# --- Action Protocols ---
+
+class ActionOutputPayload(BaseModel):
+    """Payload emitido tras completar la ejecución de un plan."""
+    results: List[ActionResult]
+    success: bool
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 class AttentionSetFocusPayload(BaseModel):
