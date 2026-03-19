@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.2.0...v0.3.0) (2026-03-19)
+
+
+### Features
+
+* implement semantic attention with embedding similarity ([76c3606](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/76c36060db836567144ae905242dab8c36cf31cf))
+* implement semantic attention with embedding similarity ([e863f5c](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/e863f5cb3253c46516c08837a83d1fdf4159cde8))
+* refactor perception as a message-driven cognitive module ([06e822c](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/06e822cd6013fcb1323b869ac34b79ff6fdddf9d))
+* refactor perception as a message-driven cognitive module ([1c497c8](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/1c497c890b394a786390eaf73bcb32d52b2d3a23))
+* refactor reasoning/planning to message-driven architecture ([dc586db](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/dc586dbe9a8c7860853193ef5bcd43eb6b13059b))
+* refactor reasoning/planning to message-driven architecture ([b54f752](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/b54f75223882e7a3d4c4d370400fc7de5b2e2a2c))
+
 ## [0.2.0](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.1.3...v0.2.0) (2026-03-17)
 
 
