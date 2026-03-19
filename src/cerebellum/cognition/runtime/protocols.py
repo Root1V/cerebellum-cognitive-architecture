@@ -37,3 +37,15 @@ class PerceptionProcessPayload(BaseModel):
 class PerceptionOutputPayload(BaseModel):
     """Payload emitido tras procesar una percepción."""
     result: PerceptionResult
+
+# --- Attention Protocols ---
+
+class AttentionOutputPayload(BaseModel):
+    """Payload emitido tras filtrar y enfocar la atención."""
+    focused_result: PerceptionResult
+    relevance_score: float = 1.0
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+class AttentionSetFocusPayload(BaseModel):
+    """Payload para actualizar el foco de atención dinámicamente."""
+    query: str
