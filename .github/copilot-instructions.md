@@ -1,12 +1,12 @@
 # Cerebellum - Copilot Instructions
 
-You are assisting with **Cerebellum**, a distributed, asynchronous, event-driven cognitive architecture inspired by neuroscience. 
+You are assisting with **Cerebellum**, a distributed, asynchronous, event-driven cognitive architecture inspired by human neuroscience. 
 
 When generating or refactoring code for this project, you must adhere strictly to the following architectural and coding constraints:
 
 ## 1. Core Stack & Typing
 - **Language**: Python 3.13+
-- **Typing**: Use strict type hints for all functions, methods, and classes. The codebase must pass `mypy src` perfectly. Do not use `Any` unless absolutely necessary (e.g., dynamic event payloads).
+- **Typing**: Use strict type hints for all functions, methods, and classes. The codebase must pass `mypy src` perfectly. Do not use `Any` unless absolutely necessary (e.g., legacy code).
 - **Models**: Use `pydantic` (`BaseModel`) for all data structures (Thoughts, Plans, Perceptions).
 - **Core Libraries**: `asyncio`, `fastapi`, `qdrant-client` (AsyncQdrantClient), `axonium` (custom LLM SDK).
 
@@ -17,7 +17,13 @@ When generating or refactoring code for this project, you must adhere strictly t
 ## 3. Event-Driven Choreography (The Golden Rule)
 - **Zero Direct Coupling**: Cognitive modules (`Perception`, `Memory`, `Reasoning`, `Action`) must **never** call each other's methods directly.
 - **CognitiveRuntime & MessageBus**: Every module must inherit from `CognitiveModule` and register itself in the `CognitiveRuntime`.
-- **Core Pattern**: Modules subscribe to topics (e.g., `memory.store`, `perception.text`) and react via `on_message`. Results are emitted back to the bus via `self.publish`.
+- **Core Pattern**: Modules subscribe to topics (e.g., `memory.store`, `perception.process`) and react via `on_message`. Results are emitted back to the bus via `self.publish`.
+- **Payload Protocols**: All message payloads MUST use `pydantic` models defined in `src/cerebellum/cognition/runtime/protocols.py`. Follow these topic naming conventions:
+  - `memory.[store|recall|search]`
+  - `perception.[process|output]`
+  - `attention.[focused|set_focus]`
+  - `reasoning.plan_ready`
+  - `action.[completed]`
 - **Choreography**: Avoid central managers or orchestrators. Successive module reactions define the flow of thought until the system reaches an idle state (`run_until_idle`).
 
 ## 4. Testing & Mocks
@@ -35,7 +41,4 @@ When generating or refactoring code for this project, you must adhere strictly t
 - **Naming Convention**: 
   - `feat/feature-name` for new capabilities.
   - `fix/bug-name` for fixes.
-- **Merge Circuit**: 
-  1. Working Branch -> `develop`.
-  2. `develop` -> `main` (only after integration is stable).
 - **Automation**: Do not manually update versions in `pyproject.toml`. The `release-please` automation handles versioning and changelogs on the `main` branch.

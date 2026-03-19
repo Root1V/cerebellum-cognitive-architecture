@@ -15,11 +15,11 @@ This file (`AGENTS.md`) serves as the foundational rulebook for all human contri
 
 ## 🏗 Cognitive Subsystems
 Our "brain logic" lives in `src/cerebellum/cognition/` and is divided into distinct domains. **No module can instantiate or directly call another.**
-1. **Perception**: Extracts structured reality (`PerceptionResult`) from raw inputs (text, vision).
-2. **Attention**: Filters the avalanche of perceptions and memories to extract exactly what matters *right now*.
-3. **Memory**: Working (volatile), Episodic (vector DBs/Qdrant), and Semantic stores. It remembers but **never executes**.
-4. **Reasoning/Planning**: The prefrontal cortex. Uses LLMs (via `axonium`) to evaluate goals and generate formal `Plan` objects.
-5. **Action**: The motor cortex. Takes a `Plan` and produces side-effects in the real world (API calls, physical actuators).
+1. **Perception**: Extracts structured reality (`PerceptionResult`). Listens for `perception.process`, emits `perception.output`.
+2. **Attention**: Filters perceptions using semantic relevance. Listens for `perception.output` and `attention.set_focus`, emits `attention.focused`.
+3. **Memory**: Working, Episodic, and Semantic stores. Listens for `memory.store`, `memory.recall`, `memory.search`. Emits `memory.available` or `memory.stored`.
+4. **Reasoning/Planning**: The prefrontal cortex. Listens for `attention.focused`, uses LLMs to generate `Plan` objects. Emits `reasoning.plan_ready`.
+5. **Action**: The motor cortex. Listens for `reasoning.plan_ready`, executes step-by-step tools and actuators. Emits `action.completed`.
 6. **Learning**: Evaluates Action outcomes against expectations to optimize future planning.
 
 ---
@@ -40,6 +40,7 @@ Any AI or Human submitting a Pull Request MUST adhere to the following:
 2. **EventBus Dependency:** All cross-module chatter happens over the Event Bus. **Zero direct method invocation between sibling cognitive lobes.**
 3. **Strict Typing:** All code must pass `mypy src` with 0 errors. Avoid `Any` in favor of `pydantic` base models.
 4. **Clean Testing:** Tests live in `tests/unit` and `tests/integration`. Use `@pytest.mark.asyncio`. NEVER hit external systems (LLMs, DBs) during unit tests; always patch and `AsyncMock` them.
+5. **Payload Protocols**: All message payloads MUST use `pydantic` models defined in `src/cerebellum/cognition/runtime/protocols.py`.
 
 ---
 
