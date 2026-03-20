@@ -2,8 +2,8 @@
 Action implementations: console, API, and other environment actuators.
 """
 
-from .console_action import ConsoleAction
+from .motor_cortex import MotorCortexModule
 
 __all__ = [
-    "ConsoleAction",
+    "MotorCortexModule",
 ]
