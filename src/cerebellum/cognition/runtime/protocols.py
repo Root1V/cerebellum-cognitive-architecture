@@ -62,6 +62,14 @@ class ActionOutputPayload(BaseModel):
     success: bool
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
+# --- Learning Protocols ---
+
+class LearningUpdatedPayload(BaseModel):
+    """Payload emitido tras procesar un nuevo aprendizaje."""
+    experience_id: str
+    insights: Dict[str, Any]
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
 class AttentionSetFocusPayload(BaseModel):
     """Payload para actualizar el foco de atención dinámicamente."""
     query: str
