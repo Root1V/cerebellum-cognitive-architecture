@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.0](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.3.0...v0.4.0) (2026-03-20)
+
+
+### Features
+
+* implement action choreography and update cognitive guidelines ([cf42aad](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/cf42aadd6230b6314a36b1193bb2e0a6509fdaba))
+* implement learning lobe choreography ([3e5736e](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/3e5736e9ef42c9d4624c10b80aeb12ad4a0e35eb))
+* implement learning lobe choreography ([1118e34](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/1118e34ca58dba88465cb7880ac7b6561043326d))
+* refactor motor cortex to message-driven architecture ([e1d225e](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/e1d225ea8f170612cdd7922d93776434384844df))
+
+
+### Documentation
+
+* update AGENTS.md and copilot-instructions.md with core choreography protocols ([fc59984](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/fc59984812b0b9c9f7395e349200e38721bf57a5))
+
 ## [0.3.0](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.2.0...v0.3.0) (2026-03-19)
 
 
