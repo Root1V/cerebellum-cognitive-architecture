@@ -7,12 +7,12 @@ async def test_memory_recall():
     from unittest.mock import AsyncMock
 
     system = AsyncMock()
-    # Mocking the responses so the assert passes
-    system.run.side_effect = ["", "Lima is the capital of Peru."]
-    agent = CognitiveAgent(cognitive_system=system)
+    agent = CognitiveAgent(runtime=system)
+    
+    # Configure the mock to return something the test can check
+    system.publish = AsyncMock(side_effect=["", "Lima is the capital of Peru."])
 
     await agent.run("Remember that the capital of Peru is Lima")
-
     response = await agent.run("What is the capital of Peru?")
 
     assert "Lima" in response
