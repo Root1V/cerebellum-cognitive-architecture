@@ -3,6 +3,7 @@
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 
 
@@ -63,6 +64,15 @@ class PerceptionResult(BaseModel):
     raw:            Any                            = Field(description="Original unprocessed input as received from the environment.")
     normalized:     Dict[str, Any]                 = Field(default_factory=dict, description="Parsed and normalized representation of the raw input.")
     interpretation: Optional[NeuralInterpretation] = Field(default=None, description="Structured semantic interpretation produced by the perception layer.")
+
+class Experience(BaseModel):
+    """Represents a single learning experience for the cognitive agent."""
+    result: Any = Field(description="The outcome or output produced by the agent's action.")
+    error: Optional[str] = Field(default=None, description="Error message if the action failed.")
+    feedback: Any = Field(default=None, description="External feedback provided about the action.")
+    success: bool = Field(description="Whether the action is considered successful.")
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    context: Optional[Dict[str, Any]] = Field(default=None, description="Optional arbitrary context data.")
 
 
 
