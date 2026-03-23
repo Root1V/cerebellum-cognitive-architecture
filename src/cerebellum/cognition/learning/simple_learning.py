@@ -6,7 +6,7 @@ from cerebellum.cognition.runtime.protocols import (
     ActionOutputPayload,
     LearningUpdatedPayload
 )
-from ..core.learning import Experience
+from ..core.models import Experience
 
 logger = logging.getLogger("cerebellum.cognition.learning.simple")
 
@@ -85,13 +85,3 @@ class LearningModule(CognitiveModule):
             "success_rate": successes / total,
             "trend": "improving" if successes > (total / 2) else "neutral"
         }
-
-    # Compatibilidad temporal
-    async def update(self, experience: Experience) -> None:
-        self._experiences.append(experience)
-
-    async def get_insights(self) -> dict:
-        return await self._calculate_insights()
-
-    async def reset(self) -> None:
-        self._experiences.clear()

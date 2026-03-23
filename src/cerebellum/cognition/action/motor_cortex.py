@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from cerebellum.cognition.runtime.cognitive_runtime import CognitiveModule
 from cerebellum.cognition.runtime.types import Message, CognitiveContext
 from cerebellum.cognition.runtime.protocols import (
@@ -90,6 +90,3 @@ class MotorCortexModule(CognitiveModule):
                 metadata={"error": str(e)}
             )
 
-    # Compatibilidad temporal
-    async def execute(self, action: Any) -> Any:
-        return f"Legacy execute called for: {action}"

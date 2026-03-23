@@ -70,10 +70,3 @@ class WorkingMemory(CognitiveModule):
                 await self.publish("memory.available", response_payload.model_dump())
         except Exception as e:
             logger.error(f"Error recalling from working memory: {e}")
-
-    # Métodos heredados del modelo anterior para compatibilidad temporal si fuera necesario
-    async def store(self, key: str, value: Any) -> None:
-        self._state[key] = value
-
-    async def retrieve(self, query: str) -> Any:
-        return self._state.get(query)

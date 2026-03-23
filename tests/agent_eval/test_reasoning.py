@@ -7,8 +7,8 @@ async def test_reasoning_chain():
     from unittest.mock import AsyncMock
 
     system = AsyncMock()
-    system.run.return_value = "1 apple remains."
-    agent = CognitiveAgent(cognitive_system=system)
+    system.publish = AsyncMock(return_value="1 apple remains.")
+    agent = CognitiveAgent(runtime=system)
 
     question = "If I have two apples and eat one, how many remain?"
 

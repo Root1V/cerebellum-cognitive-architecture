@@ -1,16 +1,11 @@
 """
 Cognition layer: planning, reasoning, memory, perception, attention, and more.
 """
-from .planners import LLMPlannerModule, SimplePlanner, Plan, PlanStep
-from .reasoning import LLMReasoner, RecursiveReasoner, HierarchicalReasoner, LoopReasoner
+from .planners import LLMPlannerModule, SimplePlannerModule, Plan, PlanStep
 
 __all__ = [
     "LLMPlannerModule",
-    "SimplePlanner",
+    "SimplePlannerModule",
     "Plan",
     "PlanStep",
-    "LLMReasoner",
-    "RecursiveReasoner",
-    "HierarchicalReasoner",
-    "LoopReasoner",
 ]
