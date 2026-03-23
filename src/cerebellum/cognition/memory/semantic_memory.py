@@ -69,14 +69,3 @@ class SemanticMemory(CognitiveModule):
                 await self.publish("memory.available", response.model_dump())
         except Exception as e:
             logger.error(f"Error recalling from semantic memory: {e}")
-
-    # Compatibilidad temporal
-    async def store(self, key: str, value: Any) -> None:
-        self.knowledge[key] = value
-
-    async def retrieve(self, query: str) -> Any:
-        return self.knowledge.get(query)
-
-    async def update(self, item: dict) -> None:
-        if isinstance(item, dict):
-            self.knowledge.update(item)

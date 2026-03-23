@@ -7,8 +7,8 @@ async def test_planning():
     from unittest.mock import AsyncMock
 
     system = AsyncMock()
-    system.run.return_value = "Step 1: Do something"
-    agent = CognitiveAgent(cognitive_system=system)
+    system.publish = AsyncMock(return_value="Step 1: Do something")
+    agent = CognitiveAgent(runtime=system)
 
     response = await agent.run(
         "Create a plan to organize a conference"

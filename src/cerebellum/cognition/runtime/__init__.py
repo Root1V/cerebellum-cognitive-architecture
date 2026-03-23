@@ -1,11 +1,11 @@
 """
-Runtime components: main cognitive system loop and orchestration.
-
-Environment implementations live in cerebellum.environment.
+Runtime components for the distributed cognitive architecture.
 """
 
-from .cognitive_system import CognitiveSystem
+from .cognitive_runtime import CognitiveRuntime
+from .event_bus import MessageBus
 
 __all__ = [
-    "CognitiveSystem",
+    "CognitiveRuntime",
+    "MessageBus",
 ]
