@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.4.0...v0.4.1) (2026-03-23)
+
+
+### Bug Fixes
+
+* update tests to match new message-driven architecture ([21230e1](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/21230e1da255e0f14616f9bde51661b9fbca4c91))
+
 ## [0.4.0](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.3.0...v0.4.0) (2026-03-20)
 
 
