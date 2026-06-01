@@ -5,6 +5,7 @@
 ### Bug Fixes
 
 * offload `EmbeddingClient.encode()` to a worker thread to avoid blocking the async event loop
+* remove dead code stubs and replace `print()` with `logger.debug()` in tracer observability
 
 ## [0.4.1](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.4.0...v0.4.1) (2026-03-23)
 
