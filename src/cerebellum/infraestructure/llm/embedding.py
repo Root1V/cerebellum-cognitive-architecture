@@ -1,7 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Any
-
-
 
 
 class Embedding(ABC):
@@ -12,8 +9,8 @@ class Embedding(ABC):
     @abstractmethod
     async def encode(
         self,
-        text: str | None = None,        
-    ) -> Any:
+        text: str | None = None,
+    ) -> list[float]:
         """
         Genera un embedding vectorial a partir de un input textual.
         """

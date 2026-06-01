@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Bug Fixes
+
+* offload `EmbeddingClient.encode()` to a worker thread to avoid blocking the async event loop
+
 ## 0.1.0 (2026-03-15)
 
 
