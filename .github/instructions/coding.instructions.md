@@ -22,24 +22,45 @@ These rules ensure code remains fast, modern, strictly typed, and enterprise-rea
 ```text
 src/
 └── cerebellum/
-    ├── cognition/        # Pure business/neuro-logic. Independent of tools.
-    │   ├── action/
-    │   ├── attention/
-    │   ├── core/         # Abstract Base Classes (Interfaces) and Pydantic Models
-    │   ├── learning/
-    │   ├── memory/       # Working, Semantic, Memory Stream abstraction
-    │   ├── perception/
-    │   ├── planners/
-    │   ├── reasoning/
-    │   └── runtime/      # Event Bus and System Orchestration
-    └── infrastructure/   # The dirty real-world implementations
-        ├── llm/          # Wrappers for axonium, Transformers, OpenAI
-        ├── observability/# Metrics, logging adapters
-        ├── security/     # Auth, encryption
-        └── storage/      # Vector databases (Qdrant), SQL, File Systems
+    ├── cognition/        # Pure business/neuro-logic. Independent of infrastructure.
+    │   ├── action/           # Motor cortex — produces environmental effects post-reasoning
+    │   ├── attention/        # Filters perceptions using semantic relevance
+    │   ├── core/             # Abstract Base Classes (ABCs) and Pydantic models (models.py, agent.py)
+    │   ├── learning/         # Evaluates outcomes to update future planning
+    │   ├── memory/           # Working, Episodic, Semantic, ProceduralMemory abstractions
+    │   ├── perception/       # Normalises raw inputs into structured PerceptionResult
+    │   ├── planners/         # SimplePlanner, LLMPlanner, TaskGraphPlanner
+    │   ├── runtime/          # CognitiveRuntime, EventBus, MessageBus, protocols.py, types.py, rules.py
+    │   ├── symbolic/         # Symbolic reasoning: compiler, constraints, rules
+    │   ├── metacognition/    # (reserved) self-monitoring and meta-level reasoning
+    │   └── neural/           # LLM neural reasoning wrappers (llm_neural.py)
+    └── infraestructure/  # Concrete real-world implementations (note: spelled as in project)
+        ├── llm/              # Wrappers for axonium SDK (llm_client.py, llm.py, embedding.py)
+        ├── observability/    # Tracer and metrics (tracer.py, metrics.py)
+        ├── security/         # (reserved) Auth, encryption
+        └── storage/          # Qdrant adapters (db_episodic.py, db_memory.py)
 ```
 
 ## 5. Logging and Observability
 * **Prohibited:** `print()` statements for debugging or standard output.
 * **Rule:** Use structured logging via the standard `logging` library.
-* **Setup:** `logger = logging.getLogger("cerebellum.module")`. Use `.debug` for verbose tracking, `.info` for cognitive shifts, and `.error` for exceptions. Include context when logging (e.g., `logger.error("Failed executing plan", exc_info=True)`).
+* **Setup:** `logger = logging.getLogger("cerebellum.<module>")` where `<module>` matches the cognitive domain (e.g. `cerebellum.perception`, `cerebellum.memory`, `cerebellum.runtime`). Use `.debug` for verbose tracking, `.info` for cognitive phase transitions, and `.error` for exceptions. Always include context when logging (e.g. `logger.error("Plan execution failed", exc_info=True)`).
+
+## 6. Running the Project
+
+```bash
+# Install dependencies
+uv pip install --system -e .[dev]
+
+# Run all tests
+uv run pytest tests/ -v
+
+# Type check
+uv run mypy src
+
+# Lint
+uv run ruff check .
+
+# Start the system
+uv run python main.py
+```.

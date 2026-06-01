@@ -1,8 +1,8 @@
 # Architecture Instructions
 
-Welcome to **Cerebellum**, a distributed, asynchronous, event-driven cognitive architecture heavily inspired by neuroscience.
+Welcome to **Cerebellum** — a distributed, asynchronous, event-driven cognitive architecture framework for building AI agents with full perception → memory → planning → reasoning → action loops, heavily inspired by human neuroscience.
 
-The system is designed with extreme decoupling. **Direct module-to-module communication is strictly forbidden.** All interactions flow through a central nervous system represented by the **Event Bus**.
+The system is designed with extreme decoupling. **Direct module-to-module communication is strictly forbidden.** All interactions flow through a central nervous system represented by the **Event Bus** (`src/cerebellum/cognition/runtime/event_bus.py`).
 
 ## High-Level Cognitive Flow
 
@@ -27,8 +27,14 @@ flowchart TD
 
 ### 1. The Event Bus is the Only Bridge
 * **Never** instantiate or inject a cognitive module directly into another cognitive module (e.g., `Reasoning` should not hold an instance of `Perception`).
-* Components should emit structured payloads (via `pydantic` models) representing events: `Event(topic="perception.done", data=PerceptionResult)`
-* A global controller or router (e.g., `CognitiveSystem`) is the ONLY entity allowed to orchestrate the pipeline by passing outputs of one subsystem to another, if an `EventBus` isn't fully active.
+* Components emit structured payloads via `pydantic` models defined in `src/cerebellum/cognition/runtime/protocols.py`.
+* The `CognitiveRuntime` (`src/cerebellum/cognition/runtime/cognitive_runtime.py`) is the ONLY orchestrator. Each module inherits from `CognitiveModule` and registers itself in the runtime.
+* Topic naming conventions (all lowercase, dot-separated):
+  - `perception.[process|output]`
+  - `attention.[focused|set_focus]`
+  - `memory.[store|recall|search]` / `memory.[available|stored]`
+  - `reasoning.plan_ready`
+  - `action.[completed]`
 
 ### 2. Neuro-inspired Subsystems
 Any new feature must be categorized appropriately:
@@ -39,8 +45,12 @@ Any new feature must be categorized appropriately:
 * **Action:** Executing side-effects in the real world (calling external APIs, controlling a machine).
 
 ### 3. Separation of Concerns (Cognition vs. Infrastructure)
-* **Cognition modules** (brain logic) must NEVER directly write to HTTP clients or Vector DB clients.
-* **Infrastructure modules** implement the interfaces needed by Cognition. `db_episodic` implements memory storage using `AsyncQdrantClient`, but `EpisodicMemory` doesn't know about `qdrant`.
+* **Cognition modules** (`src/cerebellum/cognition/`) contain pure brain logic and must NEVER directly import or instantiate HTTP clients, vector DB clients, or LLM SDKs.
+* **Infrastructure modules** (`src/cerebellum/infraestructure/`) implement the concrete adapters:
+  - `infraestructure/llm/` — wraps `axonium` SDK; exposes `complete()` and `chat()` via `llm_client.py`
+  - `infraestructure/storage/` — implements Qdrant (`AsyncQdrantClient`) adapters for episodic and semantic memory
+  - `infraestructure/observability/` — `tracer.py` and `metrics.py`
+* `EpisodicMemory` (`cognition/memory/episodic_memory.py`) must not know about `qdrant-client` directly; storage logic lives in `infraestructure/storage/db_episodic.py`.
 
 ### 4. Statelessness where possible
 Keep cognitive workers stateless. Maintain conversation history or task graphs exclusively inside `WorkingMemory` or `EpisodicMemory`.
