@@ -26,7 +26,7 @@ This directory contains all SDD specs for the Cerebellum cognitive architecture 
 | ID | Title | Status | Branch |
 |----|-------|--------|--------|
 | [001](001-fix-blocking-io-embedding-client.md) | Fix Blocking I/O in EmbeddingClient | closed | feat/001-fix-blocking-io |
-| [002](002-remove-dead-code-fix-production-issues.md) | Remove Dead Code & Fix Production Issues | implemented | feat/002-remove-dead-code-fix-production-issues |
+| [002](002-remove-dead-code-fix-production-issues.md) | Remove Dead Code & Fix Production Issues | closed | feat/002-remove-dead-code-fix-production-issues |
 
 ---
 
