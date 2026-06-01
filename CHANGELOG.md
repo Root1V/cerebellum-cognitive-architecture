@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Bug Fixes
+
+* offload `EmbeddingClient.encode()` to a worker thread to avoid blocking the async event loop
+
 ## [0.4.1](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.4.0...v0.4.1) (2026-03-23)
 
 
@@ -84,6 +90,7 @@
 * deeply improve architecture and coding instructions for copilot ([1615258](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/1615258e6b53bbeb1069b576da689b589cc200f1))
 * enhance github copilot instructions, prompts and skills ([73bebfc](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/73bebfcdff57306818e85673f23063f5b15881c7))
 * enrich copilot-instructions.md with cerebellum-specific context and rules ([e20b36d](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/e20b36dbc320d05388389cf27f97628843c6e2b6))
+>>>>>>> main
 
 ## 0.1.0 (2026-03-15)
 

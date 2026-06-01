@@ -1,6 +1,6 @@
 
+import asyncio
 import logging
-from typing import Any
 
 from sentence_transformers import SentenceTransformer
 from .embedding import Embedding
@@ -28,10 +28,11 @@ class EmbeddingClient(Embedding):
 
         logger.info("EmbeddingClient inicializado con modelo=%s", self._model_name)
 
+    # Implements: memory/specs/001-fix-blocking-io-embedding-client.md — AC-1
     async def encode(
         self,
-        text: str | None = None,        
-    ) -> Any:
+        text: str | None = None,
+    ) -> list[float]:
         """
         Genera un embedding vectorial a partir de un input textual.
 
@@ -43,8 +44,8 @@ class EmbeddingClient(Embedding):
         -------
         Un vector numérico (embedding) que representa el significado semántico del texto.
         """
-        vectors = self._model.encode(text or "")
+        vectors = await asyncio.to_thread(self._model.encode, text or "")
         logger.info("Embedding generado para texto=%s", text)
         logger.debug("Vector embedding: %s", vectors[:5])
-        
+
         return vectors.tolist()
