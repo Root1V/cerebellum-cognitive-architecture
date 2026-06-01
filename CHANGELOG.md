@@ -5,6 +5,93 @@
 ### Bug Fixes
 
 * offload `EmbeddingClient.encode()` to a worker thread to avoid blocking the async event loop
+* remove dead code stubs and replace `print()` with `logger.debug()` in tracer observability
+
+## [0.4.1](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.4.0...v0.4.1) (2026-03-23)
+
+
+### Bug Fixes
+
+* update tests to match new message-driven architecture ([21230e1](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/21230e1da255e0f14616f9bde51661b9fbca4c91))
+
+## [0.4.0](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.3.0...v0.4.0) (2026-03-20)
+
+
+### Features
+
+* implement action choreography and update cognitive guidelines ([cf42aad](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/cf42aadd6230b6314a36b1193bb2e0a6509fdaba))
+* implement learning lobe choreography ([3e5736e](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/3e5736e9ef42c9d4624c10b80aeb12ad4a0e35eb))
+* implement learning lobe choreography ([1118e34](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/1118e34ca58dba88465cb7880ac7b6561043326d))
+* refactor motor cortex to message-driven architecture ([e1d225e](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/e1d225ea8f170612cdd7922d93776434384844df))
+
+
+### Documentation
+
+* update AGENTS.md and copilot-instructions.md with core choreography protocols ([fc59984](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/fc59984812b0b9c9f7395e349200e38721bf57a5))
+
+## [0.3.0](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.2.0...v0.3.0) (2026-03-19)
+
+
+### Features
+
+* implement semantic attention with embedding similarity ([76c3606](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/76c36060db836567144ae905242dab8c36cf31cf))
+* implement semantic attention with embedding similarity ([e863f5c](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/e863f5cb3253c46516c08837a83d1fdf4159cde8))
+* refactor perception as a message-driven cognitive module ([06e822c](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/06e822cd6013fcb1323b869ac34b79ff6fdddf9d))
+* refactor perception as a message-driven cognitive module ([1c497c8](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/1c497c890b394a786390eaf73bcb32d52b2d3a23))
+* refactor reasoning/planning to message-driven architecture ([dc586db](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/dc586dbe9a8c7860853193ef5bcd43eb6b13059b))
+* refactor reasoning/planning to message-driven architecture ([b54f752](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/b54f75223882e7a3d4c4d370400fc7de5b2e2a2c))
+
+## [0.2.0](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.1.3...v0.2.0) (2026-03-17)
+
+
+### Features
+
+* implement message-driven choreography and working memory refactor ([0938449](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/09384499b3acb9ba5b2539a050951d5f06d5ad02))
+* implement message-driven cognitive runtime and refactor working memory ([43dd070](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/43dd0704057ac5cb73f7b49d963a9e0d6a498fe7))
+* refactor episodic memory as a message-driven cognitive module ([1289331](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/12893317e0bbec3722c7b67ef98d9ab8d45da26e))
+* refactor episodic memory as a message-driven cognitive module ([0545627](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/05456275aab7799bfeb66ec7a906e759553b5c9d))
+* refactor semantic memory as a message-driven cognitive module ([c48c7b1](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/c48c7b177afac994b291952cff37bce04cb73924))
+* refactor semantic memory as a message-driven cognitive module ([956aab4](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/956aab40ddb655d8fc1da755c0a299d6f23016e6))
+
+
+### Documentation
+
+* document branching strategy and development workflow in AGENTS.md and copilot-instructions ([d580bc9](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/d580bc915f066acbfce1cee36561b50079e4a558))
+* establish Event-Driven Choreography as core architectural principle ([5e8feaa](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/5e8feaa9e807a73ca61e8ae1fd37db4142363caf))
+
+## [0.1.3](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.1.2...v0.1.3) (2026-03-16)
+
+
+### Bug Fixes
+
+* **ci:** resolve remaining CI issues (new PR) ([774717a](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/774717a571f55406faf498a0fbd81e0e94b4d9f1))
+
+## [0.1.2](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.1.1...v0.1.2) (2026-03-16)
+
+
+### Bug Fixes
+
+* **ci:** resolve remaining CI issues ([be59f01](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/be59f019750395a2d9fb22c66df4fa5767cf288d))
+
+## [0.1.1](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.1.0...v0.1.1) (2026-03-16)
+
+
+### Bug Fixes
+
+* correcciones en github agents y prompts ([11534c9](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/11534c904c41d4f853a99cd4d975efdf41f29001))
+* install bandit[sarif] extra and update codeql-action to v4 ([e0a3835](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/e0a3835b23b3360ff8c8d05e980c94c19327ae5b))
+* reformat github agents markdown to follow best practices ([4354add](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/4354adde9c2a83fe9aa04e4d184cbb26d8948673))
+* remove unused imports in db_episodic.py ([5a27e1a](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/5a27e1a37d36248ddd4a88bc602509a07ef555d7))
+* resolve all mypy type-checking errors in src directory ([fe3dd57](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/fe3dd5750c7ee02217354c56ad696a7c178245b1))
+
+
+### Documentation
+
+* deeply improve AGENTS.md globally for human and AI agents ([675cae0](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/675cae081b48bab50107c582f186281296b3ed2a))
+* deeply improve architecture and coding instructions for copilot ([1615258](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/1615258e6b53bbeb1069b576da689b589cc200f1))
+* enhance github copilot instructions, prompts and skills ([73bebfc](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/73bebfcdff57306818e85673f23063f5b15881c7))
+* enrich copilot-instructions.md with cerebellum-specific context and rules ([e20b36d](https://github.com/Root1V/cerebellum-cognitive-architecture/commit/e20b36dbc320d05388389cf27f97628843c6e2b6))
+>>>>>>> main
 
 ## [0.4.1](https://github.com/Root1V/cerebellum-cognitive-architecture/compare/v0.4.0...v0.4.1) (2026-03-23)
 
