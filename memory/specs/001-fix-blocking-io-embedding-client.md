@@ -1,10 +1,10 @@
 ---
 id: "001"
 title: "Fix Blocking I/O in EmbeddingClient"
-status: releasing
+status: closed
 current-agent: release-agent
 created: 2026-05-31T20:00:00Z
-updated: 2026-06-01T00:37:46Z
+updated: 2026-06-01T00:39:39Z
 pipeline-log:
   - agent: spec-writer-agent
     status: draft
@@ -34,7 +34,7 @@ pipeline-log:
     status: implemented
     timestamp: 2026-06-01T00:28:05Z
   - agent: release-agent
-    status: releasing
+    status: closed
     timestamp: 2026-06-01T00:37:46Z
 
 # 001 — Fix Blocking I/O in EmbeddingClient
